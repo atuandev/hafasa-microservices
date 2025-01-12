@@ -1,1 +1,1 @@
-hafasa-micro
+hafasa-microservices
