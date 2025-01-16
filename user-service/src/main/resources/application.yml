@@ -1,0 +1,10 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /user-service
+
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: @spring.profiles.active@
