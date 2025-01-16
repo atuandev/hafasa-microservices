@@ -3,6 +3,9 @@ server:
   servlet:
     context-path: /user-service
 
+app:
+  url: http://localhost:8080/user-service
+
 spring:
   application:
     name: user-service
