@@ -35,12 +35,6 @@ spring:
             - Path=${app.api-prefix}/order-service/**
           filters:
             - StripPrefix=1
-        - id: openapi
-          uri: http://localhost:${server.port}
-          predicates:
-            - Path=/v3/api-docs/**
-          filters:
-            - RewritePath=/v3/api-docs/?(?<segment>.*), /${segment}/v3/api-docs
 
 # OpenAPI
 springdoc:
