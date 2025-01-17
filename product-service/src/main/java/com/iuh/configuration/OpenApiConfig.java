@@ -22,7 +22,8 @@ public class OpenApiConfig {
                            @Value("${openapi.service.description}") String description,
                            @Value("${openapi.service.version}") String version,
                            @Value("${openapi.service.server}") String server) {
-        return new OpenAPI().info(new Info().title(title)
+        return new OpenAPI().info(new Info()
+                        .title(title)
                         .description(description)
                         .version(version).license(new License().name("Apache 2.0").url("https://springdoc.org")))
                 .servers(List.of(new Server().url(server)))

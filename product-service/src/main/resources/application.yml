@@ -4,7 +4,7 @@ server:
     context-path: /product-service
 
 app:
-  api-gateway-url: http://localhost:8000/product-service
+  api-gateway-url: http://localhost:8000/api/product-service
 
 spring:
   application:

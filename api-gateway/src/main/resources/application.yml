@@ -35,12 +35,6 @@ spring:
             - Path=${app.api-prefix}/order-service/**
           filters:
             - StripPrefix=1
-        - id: openapi
-          uri: http://localhost:${server.port}
-          predicates:
-            - Path=/v3/api-docs/**
-          filters:
-            - RewritePath=/v3/api-docs/?(?<segment>.*), /${segment}/v3/api-docs
 
 # OpenAPI
 springdoc:
@@ -55,10 +49,10 @@ springdoc:
       - name: API Gateway
         url: /v3/api-docs
       - name: Product Service
-        url: /product-service/v3/api-docs
+        url: ${app.api-prefix}/product-service/v3/api-docs
 openapi:
   service:
     title: Hafasa API documentation
     version: 1.0.0
     description: API for managing books in a bookstore
-    server: http://localhost:${server.port}/api-gateway
+    server: http://localhost:${server.port}
