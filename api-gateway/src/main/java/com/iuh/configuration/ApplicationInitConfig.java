@@ -14,15 +14,11 @@ import org.springframework.context.annotation.Configuration;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class ApplicationInitConfig {
     @Bean
-    @ConditionalOnProperty(
-            prefix = "spring",
-            value = "datasource.driver-class-name",
-            havingValue = "com.mysql.cj.jdbc.Driver")
     ApplicationRunner applicationRunner() {
         log.info("Initializing application.....");
         return args -> {
             log.info("Application initialization completed .....");
-            log.info("swagger-ui: http://localhost:8081/product-service/swagger-ui.html");
+            log.info("swagger-ui: http://localhost:8000/swagger-ui.html");
         };
     }
 }

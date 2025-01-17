@@ -9,6 +9,13 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+            allow-credentials: false
       routes:
         - id: user-service
           uri: http://localhost:8080
@@ -28,3 +35,30 @@ spring:
             - Path=${app.api-prefix}/order-service/**
           filters:
             - StripPrefix=1
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/?(?<segment>.*), /${segment}/v3/api-docs
+
+# OpenAPI
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    use-root-path: true
+    urls:
+      - name: API Gateway
+        url: /v3/api-docs
+      - name: Product Service
+        url: /product-service/v3/api-docs
+openapi:
+  service:
+    title: Hafasa API documentation
+    version: 1.0.0
+    description: API for managing books in a bookstore
+    server: http://localhost:${server.port}/api-gateway
