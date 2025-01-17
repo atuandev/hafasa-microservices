@@ -55,10 +55,10 @@ springdoc:
       - name: API Gateway
         url: /v3/api-docs
       - name: Product Service
-        url: /product-service/v3/api-docs
+        url: ${app.api-prefix}/product-service/v3/api-docs
 openapi:
   service:
     title: Hafasa API documentation
     version: 1.0.0
     description: API for managing books in a bookstore
-    server: http://localhost:${server.port}/api-gateway
+    server: http://localhost:${server.port}
