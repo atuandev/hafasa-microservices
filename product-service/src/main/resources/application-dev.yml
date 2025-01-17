@@ -16,15 +16,10 @@ spring:
       host: localhost
       port: 6379
       timeout: 60000
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
+
 openapi:
   service:
     title: Hafasa API documentation
     version: 1.0.0
     description: API for managing books in a bookstore
-    server: http://localhost:${server.port}${server.servlet.context-path}
-    api-docs: hafasa-api
+    server: ${app.api-gateway-url}
