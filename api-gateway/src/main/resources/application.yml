@@ -48,8 +48,12 @@ springdoc:
     urls:
       - name: API Gateway
         url: /v3/api-docs
+      - name: User Service
+        url: ${app.api-prefix}/user-service/v3/api-docs
       - name: Product Service
         url: ${app.api-prefix}/product-service/v3/api-docs
+      - name: Order Service
+        url: ${app.api-prefix}/order-service/v3/api-docs
 openapi:
   service:
     title: Hafasa API documentation

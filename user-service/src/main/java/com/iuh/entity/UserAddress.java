@@ -14,13 +14,10 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "addresses")
 public class UserAddress extends AbstractEntity {
 
-    @Column(name = "receiver_name")
     String receiverName;
 
-    @Column(name = "receiver_phone")
     String receiverPhone;
 
-    @Column(name = "address")
     String address;
 
     @ManyToOne()

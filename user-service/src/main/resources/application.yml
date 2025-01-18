@@ -4,7 +4,7 @@ server:
     context-path: /user-service
 
 app:
-  url: http://localhost:8080/user-service
+  api-gateway-url: http://localhost:8000/api/user-service
 
 spring:
   application:
