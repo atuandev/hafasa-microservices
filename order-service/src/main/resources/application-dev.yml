@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/${MYSQL_DATABASE:hafasa_order_db}?createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_ROOT_USER:root}
+    password: ${MYSQL_ROOT_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000
+
+openapi:
+  service:
+    title: Hafasa API documentation
+    version: 1.0.0
+    description: API for managing books in a bookstore
+    server: ${app.api-gateway-url}
