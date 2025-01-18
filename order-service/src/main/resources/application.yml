@@ -1,0 +1,13 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /order-service
+
+app:
+  api-gateway-url: http://localhost:8000/api/order-service
+
+spring:
+  application:
+    name: order-service
+  profiles:
+    active: @spring.profiles.active@
