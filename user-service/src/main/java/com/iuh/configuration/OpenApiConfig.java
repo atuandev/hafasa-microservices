@@ -36,12 +36,4 @@ public class OpenApiConfig {
                                         .bearerFormat("JWT")))
                 .security(List.of(new SecurityRequirement().addList("bearerAuth")));
     }
-
-    @Bean
-    public GroupedOpenApi groupedOpenApi(@Value("${openapi.service.api-docs}") String apiDocs) {
-        return GroupedOpenApi.builder()
-                .group(apiDocs)
-                .packagesToScan("com.iuh.controller")
-                .build();
-    }
 }

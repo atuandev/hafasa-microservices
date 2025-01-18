@@ -16,11 +16,7 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       timeout: 60000
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
+
 openapi:
   service:
     title: Hafasa API documentation

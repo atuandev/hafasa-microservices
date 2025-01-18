@@ -65,7 +65,7 @@ public class ApplicationInitConfig {
                 log.warn("Admin user created with username: 'admin' and password: 'admin123', please change it!");
             }
             log.info("Application initialization completed .....");
-            log.info("swagger-ui: http://localhost:8080/bookstore/swagger-ui.html");
+            log.info("swagger-ui: http://localhost:8080/user-service/swagger-ui.html");
         };
     }
 }
