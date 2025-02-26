@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+jwt:
+  signerKey: uGn1btxMAz77FBExhcThICMJpEWG4fwLu6pJiwlObSIubo7ivat3KSD54PRN0467
+  valid-duration: 3600 # seconds
+  refreshable-duration: 360000 # seconds
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+openapi:
+  service:
+    title: Bookstore API documentation
+    version: 1.0.0
+    description: API for managing books in a bookstore
+    server: ${API_URL:DUMMY_API_URL}
+    api-docs: bookstore-api

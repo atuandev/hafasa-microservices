@@ -1,0 +1,10 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /bookstore
+
+spring:
+  application:
+    name: bookstore-api
+  profiles:
+    active: @spring.profiles.active@
