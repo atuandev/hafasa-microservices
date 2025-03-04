@@ -83,9 +83,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-        String token = generateToken(user);
+        String accessToken = generateToken(user, false);
+        String refreshToken = generateToken(user, true);
 
-        return AuthenticationResponse.builder().authenticated(true).token(token).build();
+        return AuthenticationResponse.builder()
+                .authenticated(true)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Override
@@ -158,9 +163,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .findByUsername(signedJWT.getJWTClaimsSet().getSubject())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        var token = generateToken(user);
+        // Tạo token mới
+        String newAccessToken = generateToken(user, false);
+        String newRefreshToken = generateToken(user, true);
 
-        return AuthenticationResponse.builder().authenticated(true).token(token).build();
+        return AuthenticationResponse.builder()
+                .authenticated(true)
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 
     /**
@@ -169,8 +180,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param user User
      * @return String
      */
-    private String generateToken(User user) {
+    private String generateToken(User user,boolean isRefresh) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+
+        //Bổ sung tham số isRefresh để phân biệt giữa accessToken và refreshToken:
+        Instant now = Instant.now();
+        long duration = isRefresh ? refreshableDuration : validDuration;
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
