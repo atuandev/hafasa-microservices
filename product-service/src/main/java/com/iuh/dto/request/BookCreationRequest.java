@@ -75,9 +75,9 @@ public class BookCreationRequest {
     @Builder.Default
     BookStatus status = BookStatus.DRAFT;
 
-    String categoryId;
+    String categorySlug;
 
-    String publisherId;
+    String publisherSlug;
 
     String discountCode;
 

@@ -4,6 +4,7 @@ import com.iuh.dto.ApiResponse;
 import com.iuh.dto.request.BookCreationRequest;
 import com.iuh.dto.request.BookUpdateRequest;
 import com.iuh.dto.response.BookResponse;
+import com.iuh.dto.response.BookResponseAdmin;
 import com.iuh.dto.response.PageResponse;
 import com.iuh.enums.BookStatus;
 import com.iuh.service.BookService;
@@ -25,8 +26,8 @@ public class BookController {
 
     @Operation(summary = "ADMIN: Create book")
     @PostMapping("/add")
-    ApiResponse<BookResponse> createBook(@RequestBody @Valid BookCreationRequest request) {
-        return ApiResponse.<BookResponse>builder()
+    ApiResponse<BookResponseAdmin> createBook(@RequestBody @Valid BookCreationRequest request) {
+        return ApiResponse.<BookResponseAdmin>builder()
                 .message("Book created successfully")
                 .data(bookService.save(request))
                 .build();
@@ -93,8 +94,8 @@ public class BookController {
 
     @Operation(summary = "ADMIN: Get book details by id")
     @GetMapping("/{bookId}")
-    ApiResponse<BookResponse> getBookDetails(@PathVariable String bookId) {
-        return ApiResponse.<BookResponse>builder()
+    ApiResponse<BookResponseAdmin> getBookDetails(@PathVariable String bookId) {
+        return ApiResponse.<BookResponseAdmin>builder()
                 .message("Get book details successfully")
                 .data(bookService.findById(bookId)).build();
     }
@@ -110,8 +111,8 @@ public class BookController {
 
     @Operation(summary = "ADMIN: Update book")
     @PutMapping("/{bookId}")
-    ApiResponse<BookResponse> updateBook(@PathVariable String bookId, @RequestBody @Valid BookUpdateRequest request) {
-        return ApiResponse.<BookResponse>builder()
+    ApiResponse<BookResponseAdmin> updateBook(@PathVariable String bookId, @RequestBody @Valid BookUpdateRequest request) {
+        return ApiResponse.<BookResponseAdmin>builder()
                 .message("Book updated successfully")
                 .data(bookService.update(bookId, request))
                 .build();

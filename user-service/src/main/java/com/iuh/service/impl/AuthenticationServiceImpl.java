@@ -83,13 +83,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-        String accessToken = generateToken(user, false);
-        String refreshToken = generateToken(user, true);
-
         return AuthenticationResponse.builder()
                 .authenticated(true)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .accessToken(generateAccessToken(user))
+                .refreshToken(generateRefreshToken(user))
                 .build();
     }
 
@@ -131,9 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
-        boolean verified = signedJWT.verify(jwsVerifier);
-
-        if (!(verified && expirationTime.after(new Date())))
+        if (!(signedJWT.verify(jwsVerifier) && expirationTime.after(new Date())))
             throw new AppException(ErrorCode.INVALID_TOKEN);
 
         if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
@@ -150,27 +145,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
-        SignedJWT signedJWT = verifyToken(request.getToken(), true);
+        SignedJWT signedJWT = verifyToken(request.getRefreshToken(), true);
 
         var jti = signedJWT.getJWTClaimsSet().getJWTID();
         var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         InvalidatedToken invalidatedToken = InvalidatedToken.builder().id(jti).expiryTime(expiryTime).build();
-
         invalidatedTokenRepository.save(invalidatedToken);
 
         var user = userRepository
                 .findByUsername(signedJWT.getJWTClaimsSet().getSubject())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        // Tạo token mới
-        String newAccessToken = generateToken(user, false);
-        String newRefreshToken = generateToken(user, true);
+        String accessToken = generateAccessToken(user);
+        String refreshToken = generateRefreshTokenKeepDuration(user, expiryTime);
 
         return AuthenticationResponse.builder()
                 .authenticated(true)
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -180,18 +173,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param user User
      * @return String
      */
-    private String generateToken(User user,boolean isRefresh) {
+    private String generateToken(User user, long duration) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
-
-        //Bổ sung tham số isRefresh để phân biệt giữa accessToken và refreshToken:
-        Instant now = Instant.now();
-        long duration = isRefresh ? refreshableDuration : validDuration;
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
                 .issuer("atuandev.vercel.app")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(validDuration, ChronoUnit.SECONDS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(duration, ChronoUnit.SECONDS).toEpochMilli()))
+                .jwtID(UUID.randomUUID().toString())
+                .claim("scope", buildScope(user))
+                .build();
+
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+
+        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
+
+        try {
+            jwsObject.sign(new MACSigner(signerKey.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            log.error("Cannot create token", e);
+            throw new AppException(ErrorCode.UNCATEGORIZED);
+        }
+    }
+
+    private String generateAccessToken(User user) {
+        return generateToken(user, validDuration);
+    }
+
+    private String generateRefreshToken(User user) {
+        return generateToken(user, refreshableDuration);
+    }
+
+    private String generateRefreshTokenKeepDuration(User user, Date duration) {
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(user.getUsername())
+                .issuer("atuandev.vercel.app")
+                .issueTime(new Date())
+                .expirationTime(duration)
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
