@@ -2,6 +2,7 @@ package com.iuh.controller;
 
 import com.iuh.dto.ApiResponse;
 import com.iuh.dto.request.DiscountRequest;
+import com.iuh.dto.response.DiscountResponse;
 import com.iuh.dto.response.PageResponse;
 import com.iuh.entity.Discount;
 import com.iuh.service.DiscountService;
@@ -25,8 +26,8 @@ public class DiscountController {
 
     @Operation(summary = "ADMIN: Create discount")
     @PostMapping("/add")
-    public ApiResponse<Discount> save(@RequestBody @Valid DiscountRequest request) {
-        return ApiResponse.<Discount>builder()
+    public ApiResponse<DiscountResponse> save(@RequestBody @Valid DiscountRequest request) {
+        return ApiResponse.<DiscountResponse>builder()
                 .message("Discount created successfully")
                 .data(discountService.save(request))
                 .build();
@@ -48,20 +49,20 @@ public class DiscountController {
 
     @Operation(summary = "ADMIN: Get discount by id")
     @GetMapping("/{discountId}")
-    public ApiResponse<Discount> findById(@PathVariable String discountId) {
-        return ApiResponse.<Discount>builder()
+    public ApiResponse<DiscountResponse> findById(@PathVariable String discountId) {
+        return ApiResponse.<DiscountResponse>builder()
                 .message("Get discount successfully")
-                .data(discountService.findById(discountId))
+                .data(discountService.getById(discountId))
                 .build();
     }
 
     @Operation(summary = "ADMIN: Update discount")
     @PutMapping("/{discountId}")
-    public ApiResponse<Discount> updatePublisher(
+    public ApiResponse<DiscountResponse> updatePublisher(
             @PathVariable String discountId,
             @RequestBody @Valid DiscountRequest request
     ) {
-        return ApiResponse.<Discount>builder()
+        return ApiResponse.<DiscountResponse>builder()
                 .message("Discount updated successfully")
                 .data(discountService.update(discountId, request))
                 .build();

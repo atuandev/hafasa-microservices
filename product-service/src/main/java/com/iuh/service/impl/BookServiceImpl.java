@@ -29,6 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,28 +47,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public BookResponse save(BookCreationRequest request) {
+    public BookResponseAdmin save(BookCreationRequest request) {
         Book book = bookMapper.toEntity(request);
 
-        book.setCategory(categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
+        setAssociations(book, request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
+        addBookImages(book, request.getBookImages());
 
-        book.setPublisher(publisherRepository.findById(request.getPublisherId())
-                .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND)));
-
-        book.setDiscount(discountRepository.findByCode(request.getDiscountCode()).orElse(null));
-
-        for (BookImageRequest bookImageRequest : request.getBookImages()) {
-            book.addBookImage(BookImage.builder().url(bookImageRequest.getUrl()).build());
-        }
-
-        try {
-            book = bookRepository.save(book);
-        } catch (DataIntegrityViolationException e) {
-            throw new AppException(ErrorCode.BOOK_EXISTS);
-        }
-
-        return bookMapper.toResponse(book);
+        return saveBook(book);
     }
 
     @Override
@@ -122,45 +108,28 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public BookResponse findById(String id) {
-        Book book = getBookById(id);
-        return bookMapper.toResponse(book);
+    public BookResponseAdmin findById(String id) {
+        return bookMapper.toResponseAdmin(getBookById(id));
     }
 
     @Override
     public BookResponse findBySlug(String slug) {
-        return bookRepository.findBySlug(slug).map(bookMapper::toResponse)
+        return bookRepository.findBySlug(slug)
+                .map(bookMapper::toResponse)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public BookResponse update(String id, BookUpdateRequest request) {
+    public BookResponseAdmin update(String id, BookUpdateRequest request) {
         Book book = getBookById(id);
         bookMapper.toUpdateEntity(book, request);
 
-        book.setCategory(categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
+        setAssociations(book, request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
+        updateBookImages(book, request.getBookImages());
 
-        book.setPublisher(publisherRepository.findById(request.getPublisherId())
-                .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND)));
-
-        book.setDiscount(discountRepository.findByCode(request.getDiscountCode()).orElse(null));
-
-        // update book images
-        book.getBookImages().clear();
-        for (BookImageRequest bookImageRequest : request.getBookImages()) {
-            book.addBookImage(BookImage.builder().url(bookImageRequest.getUrl()).build());
-        }
-
-        try {
-            book = bookRepository.save(book);
-        } catch (DataIntegrityViolationException e) {
-            throw new AppException(ErrorCode.BOOK_EXISTS);
-        }
-
-        return bookMapper.toResponse(book);
+        return saveBook(book);
     }
 
     @Override
@@ -179,6 +148,36 @@ public class BookServiceImpl implements BookService {
 
     private Book getBookById(String bookId) {
         return bookRepository.findById(bookId).orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+    }
+
+    private BookResponseAdmin saveBook(Book book) {
+        try {
+            Book savedBook = bookRepository.save(book);
+            return bookMapper.toResponseAdmin(savedBook);
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(ErrorCode.BOOK_EXISTS);
+        }
+    }
+
+    private void setAssociations(Book book, String categorySlug, String publisherSlug, String discountCode) {
+        book.setCategory(categoryRepository.findBySlug(categorySlug)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND)));
+
+        book.setPublisher(publisherRepository.findBySlug(publisherSlug)
+                .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND)));
+
+        book.setDiscount(discountRepository.findByCode(discountCode).orElse(null));
+    }
+
+    private void addBookImages(Book book, Set<BookImageRequest> images) {
+        images.forEach(image ->
+                book.addBookImage(BookImage.builder().url(image.getUrl()).build())
+        );
+    }
+
+    private void updateBookImages(Book book, Set<BookImageRequest> images) {
+        book.getBookImages().clear();
+        addBookImages(book, images);
     }
 
     private BookSpecificationsBuilder getBookSpecificationsBuilder(String[] books) {

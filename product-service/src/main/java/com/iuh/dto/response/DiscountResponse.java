@@ -6,12 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DiscountResponse {
+    String id;
     String name;
-    String percent;
+    String code;
+    Integer percent;
+    LocalDate startDate;
+    LocalDate endDate;
 }

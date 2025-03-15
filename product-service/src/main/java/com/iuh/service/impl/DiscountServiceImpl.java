@@ -1,6 +1,7 @@
 package com.iuh.service.impl;
 
 import com.iuh.dto.request.DiscountRequest;
+import com.iuh.dto.response.DiscountResponse;
 import com.iuh.dto.response.PageResponse;
 import com.iuh.entity.Discount;
 import com.iuh.exception.AppException;
@@ -25,10 +26,9 @@ public class DiscountServiceImpl implements DiscountService {
     DiscountMapper discountMapper;
 
     @Override
-    public Discount save(DiscountRequest request) {
-        Discount discount = discountRepository.findByCode(request.getCode())
-                .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_CODE_EXISTED));
-        return discountRepository.save(discount);
+    public DiscountResponse save(DiscountRequest request) {
+        Discount discount = discountMapper.toEntity(request);
+        return discountMapper.toResponse(discountRepository.save(discount));
     }
 
     @Override
@@ -37,21 +37,26 @@ public class DiscountServiceImpl implements DiscountService {
 
         Page<Discount> discounts = discountRepository.findAllBySearch(search, pageable);
 
-        List<Discount> items = discounts.getContent();
+        List<DiscountResponse> items = discounts.map(discountMapper::toResponse).getContent();
 
         return PageUtil.getPageResponse(pageable, discounts, items);
     }
 
     @Override
-    public Discount findById(String id) {
-        return discountRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_FOUND));
+    public DiscountResponse getById(String id) {
+        return discountRepository.findById(id)
+                .map(discountMapper::toResponse)
+                .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_FOUND));
     }
 
     @Override
-    public Discount update(String id, DiscountRequest request) {
-        Discount discount = findById(id);
+    public DiscountResponse update(String id, DiscountRequest request) {
+        Discount discount = discountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.DISCOUNT_NOT_FOUND));
+
         discountMapper.toUpdateEntity(discount, request);
-        return discountRepository.save(discount);
+
+        return discountMapper.toResponse(discountRepository.save(discount));
     }
 
     @Override
