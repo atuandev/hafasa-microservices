@@ -24,8 +24,9 @@ export function FormBookSidebar({ form, discounts }: FormBookSidebarProps) {
 
   useEffect(() => {
     startTransition(async () => {
-      const fetchCategories = await axiosClient.get<PageCategoriesResponse>('/product-service/categories/list')
-      if (fetchCategories.data) setCategories(fetchCategories.data.data)
+      const { data: { data: categories } } = await axiosClient.get<PageCategoriesResponse>('/product-service/categories/list')
+      console.log(categories)
+      if (categories) setCategories(categories)
 
       const fetchPublishers = await axiosClient.get<PagePublishersResponse>('/product-service/publishers/list')
       if (fetchPublishers.data) setPublishers(fetchPublishers.data.data)
