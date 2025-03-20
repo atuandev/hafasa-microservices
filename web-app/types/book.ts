@@ -41,7 +41,7 @@ export type Book = {
   sold: number
   reviewCount: number
   reviewStar: number
-  discount: Discount
+  discount?: Discount
   isNew: boolean
   isFeatured: boolean
   status: BookStatus

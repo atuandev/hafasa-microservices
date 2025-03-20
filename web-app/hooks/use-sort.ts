@@ -12,6 +12,20 @@ interface SortConfig {
   defaultDirection: SortDirection
 }
 
+/**
+ * A hook for managing sorting state in URL query parameters. 
+ * 
+ * URL: sortBy=title:asc
+ * 
+ * @param {SortConfig} config - Configuration object containing default sort field and direction
+ * @returns {Object} Sorting state and update function
+ *
+ * @example
+ * const { currentSort, updateSort } = useSort({
+ *   defaultField: 'name',
+ *   defaultDirection: 'asc'
+ * })
+ */
 export const useSort = ({ defaultField, defaultDirection }: SortConfig) => {
   const [sortBy, setSortBy] = useQueryState(
     'sortBy',
@@ -21,6 +35,7 @@ export const useSort = ({ defaultField, defaultDirection }: SortConfig) => {
     })
   )
 
+  // Parse sort string from URL into structured object
   const parseSortString = (sortString: string): SortState => {
     const [field, direction] = sortString.split(':')
     return {

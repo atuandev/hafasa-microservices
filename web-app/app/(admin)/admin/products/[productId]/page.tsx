@@ -1,7 +1,6 @@
-import http from '@/lib/http'
-import { PageDiscountsResponse } from '@/types/discount'
 import { FormBook } from '../_components/form-book'
 import { getBookById } from '@/actions/books/books'
+import { getDiscounts } from '@/actions/books/discounts'
 
 type ProductFormPageProps = {
   params: Promise<{ productId: string }>
@@ -10,7 +9,7 @@ type ProductFormPageProps = {
 export default async function ProductFormPage(props: ProductFormPageProps) {
   const params = await props.params
   const product = await getBookById(params.productId)
-  const discounts = await http.get<PageDiscountsResponse>('/discounts')
+  const { data: discounts } = await getDiscounts()
 
-  return <FormBook book={product.data} discounts={discounts.payload.data} />
+  return <FormBook book={product.data} discounts={discounts} />
 }
