@@ -53,6 +53,21 @@ public class SecurityConfig {
     }
 
     @Bean
+    CorsFilter corsFilter() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+
+        corsConfig.setAllowCredentials(true);
+        corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8000"));
+        corsConfig.addAllowedMethod("*");
+        corsConfig.addAllowedHeader("*");
+
+        var configSource = new UrlBasedCorsConfigurationSource();
+        configSource.registerCorsConfiguration("/**", corsConfig);
+
+        return new CorsFilter(configSource);
+    }
+
+    @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");

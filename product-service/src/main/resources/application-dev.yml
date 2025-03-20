@@ -25,8 +25,3 @@ openapi:
     version: 1.0.0
     description: API for managing books in a bookstore
     server: ${app.api-gateway-url}
-
-jwt:
-  signerKey: ${JWT_SIGNER_KEY:uGn1btxMAz77FBExhcThICMJpEWG4fwLu6pJiwlObSIubo7ivat3KSD54PRN0467}
-  valid-duration: ${JWT_VALID_DURATION:3600} # seconds
-  refreshable-duration: ${JWT_REFRESHABLE_DURATION:864000} # seconds
