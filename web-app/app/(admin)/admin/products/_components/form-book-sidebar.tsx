@@ -1,38 +1,24 @@
 'use client'
 
-import axiosClient from '@/lib/axiosClient'
-import { startTransition, useEffect, useState } from 'react'
 
 import { RequiredField } from '@/components/form/required-field'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookFormValues } from '@/schemas/book'
 import { BookStatus } from '@/types/book'
-import { PageCategories, PageCategoriesResponse } from '@/types/category'
+import { PageCategories } from '@/types/category'
 import { PageDiscounts } from '@/types/discount'
-import { PagePublishers, PagePublishersResponse } from '@/types/publisher'
+import { PagePublishers } from '@/types/publisher'
 import { UseFormReturn } from 'react-hook-form'
 
 type FormBookSidebarProps = {
   form: UseFormReturn<BookFormValues>
   discounts: PageDiscounts
+  publishers: PagePublishers
+  categories: PageCategories
 }
 
-export function FormBookSidebar({ form, discounts }: FormBookSidebarProps) {
-  const [categories, setCategories] = useState<PageCategories>()
-  const [publishers, setPublishers] = useState<PagePublishers>()
-
-  useEffect(() => {
-    startTransition(async () => {
-      const { data: { data: categories } } = await axiosClient.get<PageCategoriesResponse>('/product-service/categories/list')
-      console.log(categories)
-      if (categories) setCategories(categories)
-
-      const fetchPublishers = await axiosClient.get<PagePublishersResponse>('/product-service/publishers/list')
-      if (fetchPublishers.data) setPublishers(fetchPublishers.data.data)
-    })
-  }, [])
-
+export function FormBookSidebar({ form, discounts, publishers, categories }: FormBookSidebarProps) {
   return (
     <div className='md:col-span-4 space-y-6 bg-zinc-50 p-4 rounded-lg border'>
       <FormField

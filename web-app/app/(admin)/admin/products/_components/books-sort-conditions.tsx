@@ -8,12 +8,6 @@ const BOOK_SORT_FIELDS = [
   { key: 'author', label: 'Tác giả' },
 ]
 
-export function BookSortConditions() {
-  return (
-    <SortConditions
-      sortFields={BOOK_SORT_FIELDS}
-      defaultField="createdAt"
-      defaultDirection="desc"
-    />
-  )
+export function BooksSortConditions() {
+  return <SortConditions sortFields={BOOK_SORT_FIELDS} />
 }

@@ -1,9 +1,10 @@
 'use client'
+import { ArrowDown, ArrowUp, RefreshCcw } from 'lucide-react'
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '../ui/button'
 import { TypographySmall } from '@/components/typography'
 import { SortDirection, useSort } from '@/hooks/use-sort'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface SortField {
   key: string
@@ -12,8 +13,8 @@ interface SortField {
 
 interface SortConditionsProps {
   sortFields: SortField[]
-  defaultField: string
-  defaultDirection: SortDirection
+  defaultField?: string
+  defaultDirection?: SortDirection
   className?: string
 }
 
@@ -22,8 +23,13 @@ const DEFAULT_DIRECTIONS = [
   { key: 'asc', label: 'Tăng dần', icon: <ArrowUp /> },
 ]
 
-export function SortConditions({ sortFields, defaultField, defaultDirection, className }: SortConditionsProps) {
-  const { currentSort, updateSort } = useSort({
+export function SortConditions({
+  sortFields,
+  defaultField = 'createdAt',
+  defaultDirection = 'desc',
+  className,
+}: SortConditionsProps) {
+  const { currentSort, updateSort, clearSort } = useSort({
     defaultField,
     defaultDirection,
   })
@@ -63,6 +69,10 @@ export function SortConditions({ sortFields, defaultField, defaultDirection, cla
           ))}
         </SelectContent>
       </Select>
+
+      <Button variant='gray' onClick={clearSort}>
+        <RefreshCcw className='h-4 w-4' />
+      </Button>
     </div>
   )
 }
