@@ -41,9 +41,9 @@ public class OrderController {
     }
 
     @Operation(
-            summary = "Get all orders",
+            summary = "ADMIN: Get all orders",
             description = "Get all orders with pagination(pageNo, pageSize) and sortBy(field:direction)")
-    @GetMapping("/list")
+    @GetMapping
     public ApiResponse<PageResponse<Object>> getAllOrders(
             @Min(0) @RequestParam(defaultValue = "0", required = false) int pageNo,
             @Min(4) @RequestParam(defaultValue = "12", required = false) int pageSize,
@@ -69,7 +69,7 @@ public class OrderController {
                 .build();
     }
 
-    @Operation(summary = "Change order status")
+    @Operation(summary = "ADMIN: Change order status")
     @PatchMapping("/{id}/status")
     public ApiResponse<Void> changeStatus(@PathVariable String id, @RequestParam OrderStatus status) {
         orderService.changeStatus(id, status);

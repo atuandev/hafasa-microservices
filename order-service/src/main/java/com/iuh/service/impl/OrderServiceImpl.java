@@ -1,14 +1,18 @@
 package com.iuh.service.impl;
 
 import com.iuh.dto.request.OrderCreationRequest;
+import com.iuh.dto.request.OrderDetailRequest;
+import com.iuh.dto.response.BookResponseAdmin;
 import com.iuh.dto.response.OrderResponse;
 import com.iuh.dto.response.PageResponse;
 import com.iuh.entity.Order;
+import com.iuh.entity.OrderDetail;
 import com.iuh.enums.OrderStatus;
 import com.iuh.exception.AppException;
 import com.iuh.exception.ErrorCode;
 import com.iuh.mapper.OrderMapper;
 import com.iuh.repository.OrderRepository;
+import com.iuh.repository.httpclient.BookClient;
 import com.iuh.service.OrderService;
 import com.iuh.util.PageUtil;
 import jakarta.transaction.Transactional;
@@ -30,32 +34,30 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     OrderMapper orderMapper;
+    BookClient bookClient;
 
     @Override
     @Transactional
     public OrderResponse save(OrderCreationRequest request) {
         Order order = orderMapper.toOrder(request);
-        order.setUserId(request.getUserId());
 
-        // TODO: Call to product service to handle create order detail and update stock, sold
-//        for (OrderDetailRequest detailRequest : request.getOrderDetails()) {
-//            Book book = bookRepository.findById(detailRequest.getBookId())
-//                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-//
-//            boolean isOutOfStock = book.getStock() < detailRequest.getQuantity();
-//            if (isOutOfStock) throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
-//
-//            // Update stock and sold
-//            book.setStock(book.getStock() - detailRequest.getQuantity());
-//            book.setSold(book.getSold() + detailRequest.getQuantity());
-//            bookRepository.save(book);
-//
-//            order.addOrderDetail(OrderDetail.builder()
-//                    .book(book)
-//                    .price(detailRequest.getPrice())
-//                    .quantity(detailRequest.getQuantity())
-//                    .build());
-//        }
+        for (OrderDetailRequest detailRequest : request.getOrderDetails()) {
+            BookResponseAdmin book = bookClient.getBookDetails(detailRequest.getBookId()).getData();
+
+            boolean isOutOfStock = book.getStock() < detailRequest.getQuantity();
+            if (isOutOfStock) throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
+
+            // Update stock and sold
+            book.setStock(book.getStock() - detailRequest.getQuantity());
+            book.setSold(book.getSold() + detailRequest.getQuantity());
+            bookClient.updateBookStockAndSold(book.getId(), book.getStock(), book.getSold());
+
+            order.addOrderDetail(OrderDetail.builder()
+                    .bookId(book.getId())
+                    .price(detailRequest.getPrice())
+                    .quantity(detailRequest.getQuantity())
+                    .build());
+        }
 
         return orderMapper.toOrderResponse(orderRepository.save(order));
     }

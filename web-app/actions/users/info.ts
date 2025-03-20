@@ -7,7 +7,7 @@ import { User, UserResponse } from '@/types/user'
 import { revalidatePath } from 'next/cache'
 
 export const getUserInfo = async (): Promise<User> => {
-  const { payload } = await http.get<UserResponse>('/users/me')
+  const { payload } = await http.get<UserResponse>('/user-service/users/me')
   return payload.data
 }
 
@@ -22,7 +22,7 @@ export const updatePassword = async (data: UpdatePasswordSchemaType) => {
     newPassword: data.newPassword,
   }
   const user = await getUserInfo()
-  const { payload } = await http.patch<MessageResponse>(`/users/${user.id}/update-password`, JSON.stringify(dataReq))
+  const { payload } = await http.patch<MessageResponse>(`/user-service/users/${user.id}/update-password`, JSON.stringify(dataReq))
   revalidatePath('/account')
   return payload
 }

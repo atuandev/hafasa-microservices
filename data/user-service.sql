@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `invalidated_tokens` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table hafasa_user_db.invalidated_tokens: ~0 rows (approximately)
+-- Dumping data for table hafasa_user_db.invalidated_tokens: ~57 rows (approximately)
 DELETE FROM `invalidated_tokens`;
 
 -- Dumping structure for table hafasa_user_db.permissions
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `updated_at` datetime(6) DEFAULT NULL,
   `avatar` text,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `status` enum('ACTIVE','DISABLED') DEFAULT NULL,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -109,7 +109,7 @@ DELETE FROM `users`;
 INSERT INTO `users` (`id`, `created_at`, `updated_at`, `avatar`, `email`, `name`, `password`, `status`, `username`) VALUES
 	('0d42394b-35ac-4b8f-9e96-a513388d007d', '2024-12-01 20:16:50.723267', '2024-12-01 20:16:50.723267', 'https://ui-avatars.com/api/?background=random&rounded=true&bold=true&name=anh+tuan', 'tuan@gmail.com', 'anh tuan', '$2a$10$0syVww3PJqxeSe3BdBMs8eY4p19fTOsJzDtFEg4Uw1.IaGcEIiJ7W', 'ACTIVE', 'anhtuan'),
 	('268a4722-2abf-483a-a58b-ef41dc5d7537', '2024-11-29 12:17:43.055830', '2024-11-30 10:35:36.371551', 'https://ui-avatars.com/api/?background=random&rounded=true&bold=true&name=Son+Tung', 'sontung@gmail.com', 'Son Tung', '$2a$10$yrggAneP6/iNd2pTEGgy/uf6Xvh1eP5silSsixip6dU6eD3TPB05i', 'ACTIVE', 'sontung'),
-	('9b1c2041-348d-4cb4-98e5-bbf229c4a17f', '2024-11-25 14:23:09.381710', '2025-01-18 21:01:14.503400', 'https://ui-avatars.com/api/?background=random&rounded=true&bold=true&name=Anh+Tuan', 'atuandev@gmail.com', 'Nguyen Phan Anh Tuan', '$2a$10$5U/0HJEUWVX6jaZ85k8lQ.E4V1roKSXuD1S.i8/eoH75CyVFO2Gpa', 'ACTIVE', 'admin');
+	('9b1c2041-348d-4cb4-98e5-bbf229c4a17f', '2024-11-25 14:23:09.381710', '2025-02-17 16:39:45.727756', 'https://ui-avatars.com/api/?background=random&rounded=true&bold=true&name=Anh+Tuan', 'atuandev@gmail.com', 'Nguyen Phan Anh Tuan', '$2a$10$3E31D3kD020WKsrwlBxR/.YTfXDS8qfEzb6YcR0XOX/KmmRHczn9a', 'ACTIVE', 'admin');
 
 -- Dumping structure for table hafasa_user_db.users_roles
 CREATE TABLE IF NOT EXISTS `users_roles` (

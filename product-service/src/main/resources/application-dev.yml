@@ -30,7 +30,3 @@ jwt:
   signerKey: ${JWT_SIGNER_KEY:uGn1btxMAz77FBExhcThICMJpEWG4fwLu6pJiwlObSIubo7ivat3KSD54PRN0467}
   valid-duration: ${JWT_VALID_DURATION:3600} # seconds
   refreshable-duration: ${JWT_REFRESHABLE_DURATION:864000} # seconds
-
-app:
-  services:
-    user-service: "http://localhost:8000/api/user-service"

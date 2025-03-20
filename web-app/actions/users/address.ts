@@ -14,16 +14,16 @@ export const getUserAddresses = async () => {
 }
 
 export const addAddress = async (data: UserAddressSchemaType) => {
-  await http.post(`/addresses/add`, JSON.stringify(data))
+  await http.post(`/user-service/addresses/add`, JSON.stringify(data))
   revalidatePath('/account')
 }
 
 export const deleteAddressById = async (addressId: string) => {
-  await http.delete(`/addresses/${addressId}`)
+  await http.delete(`/user-service/addresses/${addressId}`)
   revalidatePath('/account')
 }
 
 export const updateAddressById = async (addressId: string, data: UserAddressSchemaType) => {
-  await http.put(`/addresses/${addressId}`, JSON.stringify(data))
+  await http.put(`/user-service/addresses/${addressId}`, JSON.stringify(data))
   revalidatePath('/account')
 }

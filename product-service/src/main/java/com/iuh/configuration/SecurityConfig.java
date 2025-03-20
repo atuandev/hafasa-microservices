@@ -25,7 +25,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
             "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-            "/books/**", "/categories/**", "/publishers/**", "/reviews/**"
+            "/books/**", "/categories/**", "/publishers/**", "/reviews/**",
+            "/internal/books/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -49,21 +50,6 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
-    }
-
-    @Bean
-    CorsFilter corsFilter() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-
-        corsConfig.setAllowCredentials(true);
-        corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8000"));
-        corsConfig.addAllowedMethod("*");
-        corsConfig.addAllowedHeader("*");
-
-        var configSource = new UrlBasedCorsConfigurationSource();
-        configSource.registerCorsConfiguration("/**", corsConfig);
-
-        return new CorsFilter(configSource);
     }
 
     @Bean

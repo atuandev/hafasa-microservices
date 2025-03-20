@@ -5,6 +5,7 @@ server:
 
 app:
   api-gateway-url: http://localhost:8000/api/order-service
+  product-service-url: http://localhost:8081/product-service
 
 spring:
   application:

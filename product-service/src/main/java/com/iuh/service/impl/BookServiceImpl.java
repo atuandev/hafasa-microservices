@@ -146,6 +146,14 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
     }
 
+    @Override
+    public void updateStockAndSold(String bookId, int stock, int sold) {
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        book.setStock(stock);
+        book.setSold(sold);
+        bookRepository.save(book);
+    }
+
     private Book getBookById(String bookId) {
         return bookRepository.findById(bookId).orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
     }

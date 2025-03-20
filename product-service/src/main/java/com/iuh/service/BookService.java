@@ -27,4 +27,7 @@ public interface BookService {
     void delete(String id);
 
     void changeStatus(String bookId, BookStatus status);
+
+    void updateStockAndSold(String bookId, int stock, int sold);
+
 }
