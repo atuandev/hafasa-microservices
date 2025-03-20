@@ -1,0 +1,17 @@
+services:
+  bookstore-api:
+    container_name: hafasa-gateway-container
+    image: hafasa-gateway-image:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '8000:8000'
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
