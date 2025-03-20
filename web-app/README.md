@@ -2,15 +2,16 @@
 
 ## Getting Started
 
-First, run the development server:
+Add dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun i
+```
+> Install if don't have bun: `npm i -g bun`
+
+Run the development server:
+
+```bash
 bun dev
 ```
 
