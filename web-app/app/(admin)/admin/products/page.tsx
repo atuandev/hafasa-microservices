@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { SearchParams } from 'nuqs/server'
-import { loadSearchParams } from './_components/search/searchParams'
+import { loadSearchParams } from './_components/searchParams'
 import { getBooksBySpecification } from '@/actions/books/books'
 import ListBooks from './_components/list-books'
 

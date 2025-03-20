@@ -48,8 +48,13 @@ export const useSort = ({ defaultField, defaultDirection }: SortConfig) => {
     setSortBy(`${field}:${direction}`)
   }
 
+  const clearSort = () => { 
+    setSortBy(null)
+  }
+
   return {
     currentSort: parseSortString(sortBy),
     updateSort,
+    clearSort,
   }
 } 

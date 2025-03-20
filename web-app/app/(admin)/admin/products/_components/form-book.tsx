@@ -16,13 +16,17 @@ import { FormUploadBook } from '@/app/(admin)/admin/products/_components/form-up
 import { FormBookDetail } from '@/app/(admin)/admin/products/_components/form-book-detail'
 import { FormBookSidebar } from '@/app/(admin)/admin/products/_components/form-book-sidebar'
 import { PageDiscounts } from '@/types/discount'
+import { PagePublishers } from '@/types/publisher'
+import { PageCategories } from '@/types/category'
 
 type FormAddBookProps = {
-  discounts: PageDiscounts
   book?: Book
+  discounts: PageDiscounts
+  publishers: PagePublishers
+  categories: PageCategories
 }
 
-export function FormBook({ discounts, book }: FormAddBookProps) {
+export function FormBook({ discounts, publishers, categories, book }: FormAddBookProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string>('')
@@ -96,7 +100,7 @@ export function FormBook({ discounts, book }: FormAddBookProps) {
 
           <div className='md:grid md:grid-cols-12 md:gap-6 space-y-6 md:space-y-0'>
             <FormBookDetail form={form} />
-            <FormBookSidebar form={form} discounts={discounts} />
+            <FormBookSidebar form={form} discounts={discounts} publishers={publishers} categories={categories} />
           </div>
 
           <Button type='submit' className='w-full' loading={isPending}>

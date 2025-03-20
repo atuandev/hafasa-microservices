@@ -58,8 +58,6 @@ export const createBook = async (data: BookFormValues) => {
 }
 
 export const updateBook = async (bookId: string, data: BookFormValues) => {
-  console.log(bookId)
-  console.log(data)
   const { payload } = await http.put<BookResponse>(`/product-service/books/${bookId}`, JSON.stringify(data))
   return payload
 }
