@@ -39,7 +39,6 @@ export async function getBooksBySpecification({
   }
 
   const { payload } = await http.get<PageBooksResponse>(`/product-service/books/specifications?${queryParams.toString()}`)
-
   return payload
 }
 
@@ -54,14 +53,19 @@ export const getBookBySlug = async (slug: string) => {
 }
 
 export const createBook = async (data: BookFormValues) => {
-  console.log(data)
   const { payload } = await http.post<BookResponse>('/product-service/books/add', JSON.stringify(data))
-  console.log(payload)
   return payload
 }
 
 export const updateBook = async (bookId: string, data: BookFormValues) => {
+  console.log(bookId)
+  console.log(data)
   const { payload } = await http.put<BookResponse>(`/product-service/books/${bookId}`, JSON.stringify(data))
+  return payload
+}
+
+export const updateBookStatus = async (bookId: string, status: string) => {
+  const { payload } = await http.patch<BookResponse>(`/product-service/books/${bookId}/status`, JSON.stringify({ status }))
   return payload
 }
 

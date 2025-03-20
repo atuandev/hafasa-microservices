@@ -21,6 +21,15 @@ interface SearchConfig {
   entityKey?: string
 }
 
+/**
+ * Custom hook for managing search conditions in URL query parameters
+ * 
+ * URL: books=title~:Hai,price<100000
+ * 
+ * @param {string} entityKey - Key used in URL query parameter (defaults to 'entity')
+ * @returns {Object} Object containing search conditions and methods to manipulate them
+ * 
+ */
 export const useSearchConditions = ({ entityKey = 'entity' }: SearchConfig = {}) => {
   const [conditions, setConditions] = useQueryState(
     entityKey,
