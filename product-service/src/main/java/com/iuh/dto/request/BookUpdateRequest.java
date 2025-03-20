@@ -62,6 +62,10 @@ public class BookUpdateRequest {
 
     Boolean isFeatured;
 
+    Integer reviewCount;
+
+    Double reviewStar;
+
     BookStatus status;
 
     String categorySlug;
