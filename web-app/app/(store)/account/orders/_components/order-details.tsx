@@ -1,11 +1,9 @@
-import Link from 'next/link'
-import Image from 'next/image'
-
 import { formatDateTime, formatVND } from '@/utils/format'
 import { TypographyH4, TypographyLarge, TypographyMuted, TypographySmall } from '@/components/typography'
 import { getOrderById } from '@/actions/orders/order'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { OrderDetailsItem } from './order-details-item'
 
 type OrderDetailProps = {
   orderId: string
@@ -47,27 +45,7 @@ export async function OrderDetails({ orderId }: OrderDetailProps) {
         </div>
         <div className='divide-y'>
           {order.orderDetails.map(item => (
-            <div key={item.slug} className='grid grid-cols-12 gap-2 items-center py-2'>
-              <Link href={`/${item.slug}`} target='_blank' className='col-span-6 flex gap-4 items-center'>
-                <Image
-                  src={item.thumbnail}
-                  alt={item.bookTitle}
-                  className='w-24 object-cover'
-                  width={500}
-                  height={500}
-                />
-                <TypographySmall>{item.bookTitle}</TypographySmall>
-              </Link>
-              <div className='col-span-2 text-right'>
-                <TypographySmall className=''>{formatVND(item.price)}</TypographySmall>
-              </div>
-              <div className='col-span-2 text-right'>
-                <TypographySmall className=''>{item.quantity}</TypographySmall>
-              </div>
-              <div className='col-span-2 text-right'>
-                <TypographyLarge className='text-rose-500'>{formatVND(item.price * item.quantity)}</TypographyLarge>
-              </div>
-            </div>
+            <OrderDetailsItem key={item.bookId} bookId={item.bookId} price={item.price} quantity={item.quantity} />
           ))}
         </div>
       </div>

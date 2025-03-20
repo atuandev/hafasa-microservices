@@ -5,16 +5,14 @@ export type OrderDetailRequest = {
 }
 
 export type OrderDetail = {
-  bookTitle: string
-  slug: string
-  thumbnail: string
+  bookId: string
   quantity: number
   price: number
 }
 
 export enum PaymentMethod {
   COD = 'COD',
-  VN_PAY = 'VN_PAY'
+  PAYOS = 'PAYOS'
 }
 
 export enum OrderStatus {
