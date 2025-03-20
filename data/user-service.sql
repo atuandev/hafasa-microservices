@@ -46,8 +46,10 @@ CREATE TABLE IF NOT EXISTS `invalidated_tokens` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table hafasa_user_db.invalidated_tokens: ~57 rows (approximately)
+-- Dumping data for table hafasa_user_db.invalidated_tokens: ~0 rows (approximately)
 DELETE FROM `invalidated_tokens`;
+INSERT INTO `invalidated_tokens` (`id`, `expiry_time`) VALUES
+	('523dffa1-061b-4797-bbba-0c3389c18597', '2025-03-30 13:27:20.000000');
 
 -- Dumping structure for table hafasa_user_db.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -95,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `updated_at` datetime(6) DEFAULT NULL,
   `avatar` text,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `status` enum('ACTIVE','DISABLED') DEFAULT NULL,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
