@@ -22,12 +22,27 @@
 ## Getting Started
 
 ### Dev mode
-1. Clone project: `git clone git@github.com:atuandev/hafasa-microservices.git`
-2. Install MySQL from Docker `docker pull mysql:8.4.0`
-3. Run Container **MySQL** `docker run --name mysql-8.4.0 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.4.0`
-4. Install Redis from Docker `docker pull redis:7.4.1`
-5. Run Container **Redis** `docker run --name redis-7.4.1 -p 6379:6379 -d redis:7.4.1`
-6. Use **Intellij** to run 4 project
+1. Clone project: 
+```bash
+git clone git@github.com:atuandev/hafasa-microservices.git
+```
+3. Install MySQL from Docker
+```bash
+docker pull mysql:8.4.0
+```
+4. Run Container **MySQL**
+```bash
+docker run --name mysql-8.4.0 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.4.0
+```
+5. Install Redis from Docker
+```bash
+docker pull redis:7.4.1
+```
+6. Run Container **Redis**
+```bash
+docker run --name redis-7.4.1 -p 6379:6379 -d redis:7.4.1
+```
+7. Use **Intellij** to run 4 project
 > If error when build, run `mvn clean package`
 
 ![image](https://github.com/user-attachments/assets/791fc958-c802-44a5-8948-bad73d613157)
