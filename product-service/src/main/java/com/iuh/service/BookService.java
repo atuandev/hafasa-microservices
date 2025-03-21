@@ -2,10 +2,13 @@ package com.iuh.service;
 
 import com.iuh.dto.request.BookCreationRequest;
 import com.iuh.dto.request.BookUpdateRequest;
+import com.iuh.dto.request.BookUpdateStockRequest;
 import com.iuh.dto.response.BookResponse;
 import com.iuh.dto.response.BookResponseAdmin;
 import com.iuh.dto.response.PageResponse;
 import com.iuh.enums.BookStatus;
+
+import java.util.List;
 
 public interface BookService {
     BookResponseAdmin save(BookCreationRequest request);
@@ -28,6 +31,6 @@ public interface BookService {
 
     void changeStatus(String bookId, BookStatus status);
 
-    void updateStockAndSold(String bookId, int stock, int sold);
+    List<BookResponseAdmin> getAndUpdateBooks(List<BookUpdateStockRequest> requests);
 
 }

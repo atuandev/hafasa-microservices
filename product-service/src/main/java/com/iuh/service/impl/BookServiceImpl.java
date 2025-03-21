@@ -4,6 +4,7 @@ import com.iuh.constant.AppConstant;
 import com.iuh.dto.request.BookCreationRequest;
 import com.iuh.dto.request.BookImageRequest;
 import com.iuh.dto.request.BookUpdateRequest;
+import com.iuh.dto.request.BookUpdateStockRequest;
 import com.iuh.dto.response.BookResponse;
 import com.iuh.dto.response.BookResponseAdmin;
 import com.iuh.dto.response.PageResponse;
@@ -147,11 +148,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void updateStockAndSold(String bookId, int stock, int sold) {
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-        book.setStock(stock);
-        book.setSold(sold);
-        bookRepository.save(book);
+    @Transactional
+    public List<BookResponseAdmin> getAndUpdateBooks(List<BookUpdateStockRequest> requests) {
+        return requests.stream().map(request -> {
+            Book book = getBookById(request.getBookId());
+            if (book.getStock() < request.getQuantity()) {
+                throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
+            }
+            book.setStock(book.getStock() - request.getQuantity());
+            book.setSold(book.getSold() + request.getQuantity());
+            return bookMapper.toResponseAdmin(bookRepository.save(book));
+        }).toList();
     }
 
     private Book getBookById(String bookId) {

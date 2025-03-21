@@ -1,19 +1,21 @@
 package com.iuh.repository.httpclient;
 
+import com.iuh.configuration.AuthenticationRequestInterceptor;
 import com.iuh.dto.ApiResponse;
+import com.iuh.dto.request.BookUpdateStockRequest;
 import com.iuh.dto.response.BookResponseAdmin;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "book-service", url = "${app.product-service-url}")
+import java.util.List;
+
+@FeignClient(
+        name = "book-service",
+        url = "${app.product-service-url}",
+        configuration = AuthenticationRequestInterceptor.class
+)
 public interface BookClient {
-    @GetMapping(value = "/internal/books/{bookId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ApiResponse<BookResponseAdmin> getBookDetails(@PathVariable String bookId);
-
-    @PutMapping(value = "/internal/books/{bookId}/update-stock-sold", produces = MediaType.APPLICATION_JSON_VALUE)
-    void updateBookStockAndSold(@PathVariable String bookId, @RequestParam int stock, @RequestParam int sold);
+    @PostMapping("/internal/books/batch-update")
+    ApiResponse<List<BookResponseAdmin>> updateBooks(@RequestBody List<BookUpdateStockRequest> requests);
 }
