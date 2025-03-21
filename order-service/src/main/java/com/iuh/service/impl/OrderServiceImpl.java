@@ -1,5 +1,6 @@
 package com.iuh.service.impl;
 
+import com.iuh.dto.request.BookUpdateStockRequest;
 import com.iuh.dto.request.OrderCreationRequest;
 import com.iuh.dto.request.OrderDetailRequest;
 import com.iuh.dto.response.BookResponseAdmin;
@@ -41,25 +42,34 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse save(OrderCreationRequest request) {
         Order order = orderMapper.toOrder(request);
 
-        for (OrderDetailRequest detailRequest : request.getOrderDetails()) {
-            BookResponseAdmin book = bookClient.getBookDetails(detailRequest.getBookId()).getData();
+        try {
+            // Prepare batch update request
+            List<BookUpdateStockRequest> updateRequests = request.getOrderDetails().stream()
+                    .map(detail -> BookUpdateStockRequest.builder()
+                            .bookId(detail.getBookId())
+                            .quantity(detail.getQuantity())
+                            .build())
+                    .toList();
 
-            boolean isOutOfStock = book.getStock() < detailRequest.getQuantity();
-            if (isOutOfStock) throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
+            List<BookResponseAdmin> updatedBooks = bookClient.updateBooks(updateRequests).getData();
 
-            // Update stock and sold
-            book.setStock(book.getStock() - detailRequest.getQuantity());
-            book.setSold(book.getSold() + detailRequest.getQuantity());
-            bookClient.updateBookStockAndSold(book.getId(), book.getStock(), book.getSold());
+            // Create order details using updated books
+            for (int i = 0; i < updatedBooks.size(); i++) {
+                BookResponseAdmin book = updatedBooks.get(i);
+                OrderDetailRequest detailRequest = request.getOrderDetails().get(i);
 
-            order.addOrderDetail(OrderDetail.builder()
-                    .bookId(book.getId())
-                    .price(detailRequest.getPrice())
-                    .quantity(detailRequest.getQuantity())
-                    .build());
+                order.addOrderDetail(OrderDetail.builder()
+                        .bookId(book.getId())
+                        .price(detailRequest.getPrice())
+                        .quantity(detailRequest.getQuantity())
+                        .build());
+            }
+
+            return orderMapper.toOrderResponse(orderRepository.save(order));
+        } catch (Exception e) {
+            log.error("Error creating order: ", e);
+            throw new AppException(ErrorCode.ORDER_CREATE_ERROR);
         }
-
-        return orderMapper.toOrderResponse(orderRepository.save(order));
     }
 
     @Override

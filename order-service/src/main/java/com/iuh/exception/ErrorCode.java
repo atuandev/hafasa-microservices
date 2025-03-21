@@ -63,6 +63,7 @@ public enum ErrorCode {
     INVALID_BOOK_THUMBNAIL(1049, "Thumbnail must not be null", HttpStatus.BAD_REQUEST),
     JSON_PROCESSING_ERROR(1050, "Json processing error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_AVATAR(1051, "Avatar must not be null", HttpStatus.BAD_REQUEST),
+    ORDER_CREATE_ERROR(1052, "Error creating order", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     int code;
