@@ -66,8 +66,18 @@ async function handleTokenRefresh(accessToken: string, refreshToken: string, res
       const payload = await refreshAccessToken(refreshToken)
       
       if (payload?.data?.accessToken && payload?.data?.refreshToken) {
-        response.cookies.set('accessToken', payload.data.accessToken)
-        response.cookies.set('refreshToken', payload.data.refreshToken)
+        response.cookies.set('accessToken', payload.data.accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          path: '/',
+          sameSite: 'lax',
+        })
+        response.cookies.set('refreshToken', payload.data.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          path: '/',
+          sameSite: 'lax',
+        })
       }
     }
   } catch (error) {
