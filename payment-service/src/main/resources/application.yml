@@ -1,14 +1,18 @@
 server:
-  port: 8082
+  port: 8083
   servlet:
-    context-path: /order-service
+    context-path: /payment-service
 
 app:
-  api-gateway-url: http://localhost:8000/api/order-service
-  product-service-url: http://localhost:8081/product-service
+  api-gateway-url: http://localhost:8000/api/payment-service
 
 spring:
   application:
-    name: order-service
+    name: payment-service
   profiles:
     active: @spring.profiles.active@
+
+payos:
+  CLIENT_ID: cdc84c41-205e-4b62-bef8-f2b2fd7f851e
+  API_KEY: 20f11e69-b4e1-45ce-9085-7f3d33897a31
+  CHECKSUM_KEY: 2c3be869c1c73aa7fe4c5f87d50f42b99e2ce35903c8567f58880422e39938bf

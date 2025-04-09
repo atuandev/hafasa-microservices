@@ -1,13 +1,16 @@
-package com.springboot.app.dto.request;
+package com.iuh.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+@Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class PaymentCreateLinkRequest { // orderId cua pay
-    private String orderId;   // orderId sẽ được nhận từ RequestBody
-    private int price;
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+public class PaymentCreateLinkRequest {
+    String orderId;
+    int price;
+    String returnUrl;
+    String cancelUrl;
 }

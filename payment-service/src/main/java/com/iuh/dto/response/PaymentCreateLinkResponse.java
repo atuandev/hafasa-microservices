@@ -1,16 +1,18 @@
-package com.springboot.app.dto.response;
+package com.iuh.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+@Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class PaymentCreateLinkResponse {
-  private long orderIdOS;   // orderId cua pay
-  private String orderId;   // orderId sẽ được nhận từ RequestBody
-  private int price;
-  private String checkoutUrl;
-
+    long orderCode;
+    String orderId;
+    int price;
+    String checkoutUrl;
+    String returnUrl;
+    String cancelUrl;
 }

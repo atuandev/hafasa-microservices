@@ -2,15 +2,10 @@ spring:
   config:
     activate:
       on-profile: dev
+
 openapi:
   service:
     title: Hafasa API documentation
     version: 1.0.0
-    description: API for payment books in a bookstore
+    description: API for managing books in a bookstore
     server: ${app.api-gateway-url}
-
-    #Hibernate properties
-
-server:
-  port: 8083
-
