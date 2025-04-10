@@ -1,0 +1,13 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /email-service
+
+app:
+  api-gateway-url: http://localhost:8000/api/email-service
+
+spring:
+  application:
+    name: email-service
+  profiles:
+    active: @spring.profiles.active@
