@@ -30,6 +30,12 @@ spring:
             - Path=${app.api-prefix}/order-service/**
           filters:
             - StripPrefix=1
+        - id: email-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=${app.api-prefix}/email-service/**
+          filters:
+            - StripPrefix=1
 
 # OpenAPI
 springdoc:
@@ -49,6 +55,9 @@ springdoc:
         url: ${app.api-prefix}/product-service/v3/api-docs
       - name: Order Service
         url: ${app.api-prefix}/order-service/v3/api-docs
+      - name: Email Service
+        url: ${app.api-prefix}/email-service/v3/api-docs
+
 openapi:
   service:
     title: Hafasa API documentation
