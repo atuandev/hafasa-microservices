@@ -2,7 +2,7 @@
 
 import http from '@/lib/http'
 import { getUserInfo } from '@/actions/users/info'
-import { OrderResponse, PageOrdersResponse } from '@/types/order'
+import { OrderResponse, PageOrdersResponse, OrderStatus } from '@/types/order'
 import { OrderSchemaType } from '@/schemas/order'
 
 export const getUserOrders = async (pageNo: number, pageSize: number) => {
@@ -20,5 +20,18 @@ export const getOrderById = async (orderId: string) => {
 
 export const createOrder = async (data: OrderSchemaType) => {
   const { payload } = await http.post<OrderResponse>('/order-service/orders', JSON.stringify(data))
+  return payload
+}
+
+export const changeStatus = async (orderId: string, status: OrderStatus) => {
+  console.log(`Updating order ${orderId} to status: ${status}`)
+
+  // The API expects the status in a properly formatted JSON object
+  const { payload } = await http.patch<OrderResponse>(
+    `/order-service/orders/${orderId}/status`,
+    JSON.stringify({ status })
+  )
+
+  console.log('API response:', payload)
   return payload
 }
