@@ -65,16 +65,26 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse save(UserCreationRequest request) {
         log.info("Saving new user: {}", request.getUsername());
+
         User user = userMapper.toEntity(request);
+        log.debug("Mapped User entity: {}", user);
 
         String avatarName = user.getName().replace(" ", "+");
-        user.setAvatar("https://ui-avatars.com/api/?background=random&rounded=true&bold=true&name=" + avatarName);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        String avatarUrl = "https://ui-avatars.com/api/?background=random&rounded=true&bold=true&name=" + avatarName;
+        user.setAvatar(avatarUrl);
+        log.debug("Generated avatar URL: {}", avatarUrl);
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        user.setPassword(encodedPassword);
+        log.debug("Encoded password set for user");
+
         user.setAddresses(new HashSet<>());
+        log.debug("Initialized empty address set for user");
 
         var roles = new HashSet<Role>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
         user.setRoles(roles);
+        log.debug("Assigned roles: {}", roles);
 
         try {
             user = userRepository.save(user);
@@ -87,12 +97,18 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(user);
     }
 
+
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse findById(String id) {
         log.info("Finding user by ID: {}", id);
+
         User user = getUserById(id);
+        log.debug("Retrieved user entity: {}", user);
+
         updateCacheUser(user, 1);
+        log.debug("Updated cache for user with ID: {}", id);
+
         return userMapper.toResponse(user);
     }
 
@@ -102,10 +118,13 @@ public class UserServiceImpl implements UserService {
         log.info("Fetching info for current user: {}", username);
 
         String userJson = redisService.hashGet(RedisKey.USER_INFO, username);
+        log.debug("Fetched raw JSON from Redis for {}: {}", username, userJson);
+
         if (StringUtils.isNotEmpty(userJson)) {
             try {
                 User cachedUser = redisObjectMapper.readValue(userJson, User.class);
                 log.info("Loaded user info from cache for: {}", username);
+                log.debug("Parsed cached user entity: {}", cachedUser);
                 return userMapper.toResponse(cachedUser);
             } catch (JsonProcessingException e) {
                 log.error("Error parsing cached user info for: {}", username, e);
@@ -113,10 +132,14 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        log.debug("No cache found. Querying database for user: {}", username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.debug("Fetched user from DB: {}", user);
 
         updateCacheUser(user, 1);
+        log.debug("Updated cache for current user: {}", username);
+
         return userMapper.toResponse(user);
     }
 
@@ -159,6 +182,7 @@ public class UserServiceImpl implements UserService {
         log.info("Finding all users with specifications: pageNo={}, pageSize={}, sortBy={}", pageNo, pageSize, sortBy);
 
         if (users == null || users.length == 0) {
+            log.debug("User specification array is empty or null. Using default findAll()");
             return findAll(pageNo, pageSize, sortBy, "");
         }
 
@@ -166,14 +190,17 @@ public class UserServiceImpl implements UserService {
         Pattern pattern = Pattern.compile(AppConstant.SEARCH_SPEC_OPERATOR);
 
         for (String s : users) {
+            log.debug("Processing user filter string: {}", s);
             Matcher matcher = pattern.matcher(s);
-            if (matcher.find())
+            if (matcher.find()){
+                log.debug("Matched filter -> field: {}, operator: {}, value: {}", matcher.group(1), matcher.group(2), matcher.group(3));
                 builder.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-        }
+        }}
 
         Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
         Page<User> usersPage = userRepository.findAll(builder.build(), pageable);
         List<UserResponse> items = usersPage.map(userMapper::toResponse).getContent();
+        log.debug("Number of users found: {}", usersPage.getTotalElements());
 
         return PageUtil.getPageResponse(pageable, usersPage, items);
     }
