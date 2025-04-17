@@ -129,43 +129,35 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse update(String id, UserUpdateRequest request) {
+        log.info("Updating user ID: {}", id);
         User user = getUserById(id);
         userMapper.updateUser(user, request);
         User updatedUser = userRepository.save(user);
-
-        // Update cache
         updateCacheUser(updatedUser, 2);
+        log.info("Updated user ID: {}", id);
         return userMapper.toResponse(updatedUser);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(String id) {
+        log.info("Deleting user ID: {}", id);
         User user = getUserById(id);
         userRepository.deleteById(id);
-
-        // Remove from cache
         deleteCacheUser(user.getUsername());
+        log.info("Deleted user ID: {}", id);
     }
 
-    /**
-     * Find all users with sorting and pagination
-     *
-     * @param pageNo   int
-     * @param pageSize int
-     * @param sortBy   String
-     * @param search   String
-     * @return PageResponse
-     */
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<Object> findAll(int pageNo, int pageSize, String sortBy, String search) {
+        log.info("Finding all users: pageNo={}, pageSize={}, sortBy={}, search={}", pageNo, pageSize, sortBy, search);
         Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
         Page<User> users = userRepository.findAllAndSearch(search, search, search, search, pageable);
         List<UserResponse> items = users.map(userMapper::toResponse).getContent();
-
         return PageUtil.getPageResponse(pageable, users, items);
     }
+
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
