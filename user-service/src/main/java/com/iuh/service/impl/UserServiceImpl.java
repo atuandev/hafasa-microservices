@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserServiceImpl implements UserService {
+
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
@@ -55,15 +56,10 @@ public class UserServiceImpl implements UserService {
     RedisService<String, String, String> redisService;
     ObjectMapper redisObjectMapper;
 
-    /**
-     * Save user to database
-     *
-     * @param request UserCreationRequest
-     * @return UserResponse
-     */
     @Override
     @Transactional
     public UserResponse save(UserCreationRequest request) {
+        log.info("Saving new user: {}", request.getUsername());
         User user = userMapper.toEntity(request);
 
         String avatarName = user.getName().replace(" ", "+");
@@ -77,12 +73,15 @@ public class UserServiceImpl implements UserService {
 
         try {
             user = userRepository.save(user);
+            log.info("User {} saved successfully", request.getUsername());
         } catch (DataIntegrityViolationException e) {
+            log.error("User {} already exists", request.getUsername(), e);
             throw new AppException(ErrorCode.USER_EXISTS);
         }
 
         return userMapper.toResponse(user);
     }
+
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
