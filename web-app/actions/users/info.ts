@@ -3,7 +3,7 @@
 import http from '@/lib/http'
 import { UpdatePasswordSchemaType, UserSchemaType } from '@/schemas/user-info'
 import { MessageResponse } from '@/types/response'
-import { User, UserResponse } from '@/types/user'
+import { User, UserResponse, PageUsersResponse } from '@/types/user'
 import { revalidatePath } from 'next/cache'
 
 export const getUserInfo = async (): Promise<User> => {
@@ -22,7 +22,18 @@ export const updatePassword = async (data: UpdatePasswordSchemaType) => {
     newPassword: data.newPassword,
   }
   const user = await getUserInfo()
-  const { payload } = await http.patch<MessageResponse>(`/user-service/users/${user.id}/update-password`, JSON.stringify(dataReq))
+  const { payload } = await http.patch<MessageResponse>(
+    `/user-service/users/${user.id}/update-password`,
+    JSON.stringify(dataReq)
+  )
   revalidatePath('/account')
+  return payload
+}
+
+export const getPageUsers = async (pageNo: number, pageSize: number, sortBy: string, search: string) => {
+  let url = `/user-service/users/list?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}&search=${search}`
+
+  const { payload } = await http.get<PageUsersResponse>(url)
+
   return payload
 }

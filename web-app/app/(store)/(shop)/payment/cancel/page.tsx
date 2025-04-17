@@ -33,13 +33,13 @@ export default function PaymentCancelPage() {
         const response = await cancelPayment(orderId);
         console.log('Cancel payment response:', response);
         
-        if (response.code === 1000) {
-          setUpdateSuccess(true);
-          console.log('Payment cancelled successfully');
-        } else {
-          toast.error('Không thể hủy thanh toán');
-          console.error('Failed to cancel payment:', response.message);
-        }
+        // if (response.code === 1000) {
+        //   setUpdateSuccess(true);
+        //   console.log('Payment cancelled successfully');
+        // } else {
+        //   toast.error('Không thể hủy thanh toán');
+        //   console.error('Failed to cancel payment:', response.message);
+        // }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         toast.error('Đã xảy ra lỗi khi hủy thanh toán');
