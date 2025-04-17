@@ -162,6 +162,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<Object> findAllWithSpecifications(int pageNo, int pageSize, String sortBy, String[] users) {
+        log.info("Finding all users with specifications: pageNo={}, pageSize={}, sortBy={}", pageNo, pageSize, sortBy);
+
         if (users == null || users.length == 0) {
             return findAll(pageNo, pageSize, sortBy, "");
         }
@@ -185,41 +187,45 @@ public class UserServiceImpl implements UserService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void updateStatus(String id, UserStatus status) {
+        log.info("Updating status for user ID {} to {}", id, status);
         User user = getUserById(id);
         user.setStatus(status);
         userRepository.save(user);
-
-        // Update cache
         updateCacheUser(user, 1);
     }
 
     @Override
     public void updatePassword(String id, UserUpdatePasswordRequest request) {
+        log.info("Updating password for user ID: {}", id);
         User user = getUserById(id);
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            log.warn("Incorrect old password for user ID: {}", id);
             throw new AppException(ErrorCode.INCORRECT_OLD_PASSWORD);
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
-
-        // Update cache
         updateCacheUser(user, 1);
+        log.info("Password updated for user ID: {}", id);
     }
 
     @Override
     public void updateAvatar(String id, UserUpdateAvatarRequest request) {
+        log.info("Updating avatar for user ID: {}", id);
         User user = getUserById(id);
         user.setAvatar(request.getAvatar());
         userRepository.save(user);
-
-        // Update cache
         updateCacheUser(user, 1);
+        log.info("Avatar updated for user ID: {}", id);
     }
 
     private User getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("User not found with ID: {}", id);
+                    return new AppException(ErrorCode.USER_NOT_FOUND);
+                });
     }
 
     private void updateCacheUser(User user, int expireHours) {
@@ -227,12 +233,15 @@ public class UserServiceImpl implements UserService {
             String userJson = redisObjectMapper.writeValueAsString(user);
             redisService.hashSet(RedisKey.USER_INFO, user.getUsername(), userJson);
             redisService.setExpireHours(RedisKey.USER_INFO, expireHours);
+            log.info("Updated cache for user: {}", user.getUsername());
         } catch (JsonProcessingException e) {
+            log.error("Error while caching user data: {}", user.getUsername(), e);
             throw new AppException(ErrorCode.JSON_PROCESSING_ERROR);
         }
     }
 
     private void deleteCacheUser(String username) {
         redisService.delete(RedisKey.USER_INFO, username);
+        log.info("Deleted user cache: {}", username);
     }
 }
