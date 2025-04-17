@@ -86,37 +86,37 @@ public class UserServiceImpl implements UserService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse findById(String id) {
+        log.info("Finding user by ID: {}", id);
         User user = getUserById(id);
         updateCacheUser(user, 1);
         return userMapper.toResponse(user);
     }
 
-    /**
-     * Get user info
-     *
-     * @return UserResponse
-     */
     @Override
     public UserResponse getMyInfo() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Fetching info for current user: {}", username);
 
-        // Check if user info is cached
         String userJson = redisService.hashGet(RedisKey.USER_INFO, username);
         if (StringUtils.isNotEmpty(userJson)) {
             try {
                 User cachedUser = redisObjectMapper.readValue(userJson, User.class);
+                log.info("Loaded user info from cache for: {}", username);
                 return userMapper.toResponse(cachedUser);
             } catch (JsonProcessingException e) {
+                log.error("Error parsing cached user info for: {}", username, e);
                 throw new AppException(ErrorCode.JSON_PROCESSING_ERROR);
             }
         }
 
-        // If not cached, get user info from database and cache it
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        updateCacheUser(user, 1);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        updateCacheUser(user, 1);
         return userMapper.toResponse(user);
     }
+
+
 
     /**
      * Update user by id
