@@ -12,3 +12,12 @@ spring:
     name: order-service
   profiles:
     active: @spring.profiles.active@
+
+logging:
+  level:
+    root: info
+    com.iuh: debug
+  file:
+    name: logs/order-service.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
