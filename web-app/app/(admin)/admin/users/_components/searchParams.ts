@@ -7,7 +7,6 @@ const usersSearchParams = {
   page: parseAsString.withDefault(DEFAULT_PAGE_NO),
   pageSize: parseAsString.withDefault(DEFAULT_PAGE_SIZE),
   sortBy: parseAsString.withDefault(DEFAULT_SORT_BY),
-  search: parseAsString.withDefault(''),
 }
 
 export const loadSearchParams = createLoader(usersSearchParams)

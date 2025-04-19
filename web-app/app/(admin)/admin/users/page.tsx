@@ -10,78 +10,38 @@ type UsersPageProps = {
 }
 
 export default async function UsersPage({ searchParams }: UsersPageProps) {
-  const { page, pageSize, sortBy, search } = await loadSearchParams(searchParams)
+  const { page, pageSize, sortBy } = await loadSearchParams(searchParams)
   
-  // Get real data from API
-  const response = await getPageUsers(Number(page), Number(pageSize), sortBy, search)
+  // Fetch users data from API
+  const response = await getPageUsers(Number(page), Number(pageSize), sortBy, '')
   console.log('API Response:', response)
   
-  // Create fully typed mock data for users display
-  const mockData: PageUsersResponse['data'] = {
-    pageNo: 1,
-    pageSize: 10,
-    totalPages: 1,
-    totalElements: 4,
-    items: [
-      {
-        id: '1',
-        username: 'anhtuanuser',
-        name: 'Anh Tuan',
-        email: 'tuan@gmail.com',
-        avatar: 'https://ui-avatars.com/api/?background=random&color=fff&name=AT',
-        status: UserStatus.ACTIVE,
-        roles: [{ name: RoleEnum.USER, description: 'User role' }],
-        createdAt: '2024-12-01',
-        updatedAt: '2024-12-01'
-      },
-      {
-        id: '2',
-        username: 'sontuong',
-        name: 'Son Tuong',
-        email: 'sontuong@gmail.com',
-        avatar: 'https://ui-avatars.com/api/?background=random&color=fff&name=ST',
-        status: UserStatus.ACTIVE,
-        roles: [{ name: RoleEnum.USER, description: 'User role' }],
-        createdAt: '2024-12-01',
-        updatedAt: '2024-12-01'
-      },
-      {
-        id: '3',
-        username: 'admin',
-        name: 'Nguyen Phan Anh Tuan',
-        email: 'admin@gmail.com',
-        avatar: 'https://ui-avatars.com/api/?background=random&color=fff&name=AT',
-        status: UserStatus.ACTIVE,
-        roles: [{ name: RoleEnum.ADMIN, description: 'Admin role' }],
-        createdAt: '2024-11-25',
-        updatedAt: '2024-11-25'
-      },
-      {
-        id: '4',
-        username: 'minhphuong2023',
-        name: 'Đặng Minh Phương',
-        email: 'minhphuong2023@gmail.com',
-        avatar: 'https://ui-avatars.com/api/?background=random&color=fff&name=MP',
-        status: UserStatus.ACTIVE,
-        roles: [{ name: RoleEnum.USER, description: 'User role' }],
-        createdAt: '2025-04-17',
-        updatedAt: '2025-04-17'
-      }
-    ]
+  // Check if response is successful (code 1000 for successful response) and has data
+  if (response?.code === 1000 && response?.data) {
+    return (
+      <Suspense fallback={<ListUsers.Skeleton />}>
+        <ListUsers usersData={response.data} />
+      </Suspense>
+    )
   }
-
-  // Always use mock data for now due to API error
-  // NOTE: Change this to use real API data once the backend is fixed
-  const userData = mockData;
   
+  // If API returned an error or no data, display an error message
   return (
     <Suspense fallback={<ListUsers.Skeleton />}>
       <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-md text-amber-700">
-        <p className="font-medium">⚠️ Using mock data due to API error: {response?.message}</p>
-        <p className="text-sm mt-1">This is a temporary solution while the backend API is being fixed.</p>
-        <p className="text-sm mt-1">Backend error code: {response?.code}</p>
+        <p className="font-medium">⚠️ API Error: {response?.message}</p>
+        <p className="text-sm mt-1">Unable to retrieve user data from the backend API.</p>
+        <p className="text-sm mt-1">Error code: {response?.code}</p>
       </div>
-      <ListUsers usersData={userData} />
+      
+      {/* Provide empty data structure to prevent errors in the ListUsers component */}
+      <ListUsers usersData={{
+        pageNo: 1,
+        pageSize: 10,
+        totalPages: 0,
+        totalElements: 0,
+        items: []
+      }} />
     </Suspense>
   )
 }
