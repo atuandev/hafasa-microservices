@@ -14,13 +14,13 @@ interface ListUsersProps {
 export default function ListUsers({ usersData }: ListUsersProps) {
   return (
     <div className='space-y-6'>
-      <div className='mb-6 flex items-center justify-between'>
+      {/* <div className='mb-6 flex items-center justify-between'>
         <TypographyH3 className='text-primary'>Danh sách người dùng</TypographyH3>
         
         <Link href='/admin/users/add'>
           <Button type='button'>Thêm người dùng</Button>
         </Link>
-      </div>
+      </div> */}
 
       <UsersFilter />
       <UsersTable users={usersData} />

@@ -67,7 +67,7 @@ export function UsersTable({ users }: UsersTableProps) {
               <TableHead>Username</TableHead>
               <TableHead className='text-center'>Vai trò</TableHead>
               <TableHead className='text-center'>Trạng thái</TableHead>
-              <TableHead className='text-right'>Hành động</TableHead>
+              <TableHead className='w-[110px] text-center'>Ngày tạo</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,7 +105,7 @@ export function UsersTable({ users }: UsersTableProps) {
                       <Badge className='bg-red-500 text-white hover:bg-red-600'>Đã khóa</Badge>
                     )}
                   </TableCell>
-                  <TableCell className='text-right'>
+                  {/* <TableCell className='text-right'>
                     <div className='flex justify-end gap-2'>
                       <Link href={`/admin/users/${user.id}`}>
                         <Button variant='gray' size='icon' aria-label={`Edit ${user.name}`}>
@@ -144,7 +144,8 @@ export function UsersTable({ users }: UsersTableProps) {
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
-                  </TableCell>
+                  </TableCell> */}
+                  <TableCell>{new Date(user.createdAt).toLocaleDateString('vi-VN')}</TableCell>
                 </TableRow>
               ))
             ) : (

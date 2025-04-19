@@ -57,7 +57,7 @@ export function ListBooksTable({ books }: ListBooksTableProps) {
               <TableHead className='text-right'>Giá</TableHead>
               <TableHead className='text-right'>Số lượng</TableHead>
               <TableHead className='text-center'>Trạng thái</TableHead>
-              <TableHead className='text-right'>Hành động</TableHead>
+              {/* <TableHead className='text-right'>Hành động</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
