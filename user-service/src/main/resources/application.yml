@@ -11,3 +11,12 @@ spring:
     name: user-service
   profiles:
     active: @spring.profiles.active@
+
+logging:
+  level:
+    root: info
+    com.iuh: debug  # Ghi debug cho package của bạn
+  file:
+    name: logs/user-service.log  # Đường dẫn file log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
