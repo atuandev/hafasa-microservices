@@ -1,0 +1,60 @@
+2025-04-20 17:52:40 INFO  [main] com.iuh.UserServiceApplication - Starting UserServiceApplication using Java 21.0.6 with PID 20716 (D:\svNam4\KTPM\hafasa-microservices\user-service\target\classes started by minhp in D:\svNam4\KTPM\hafasa-microservices)
+2025-04-20 17:52:40 DEBUG [main] com.iuh.UserServiceApplication - Running with Spring Boot v3.4.1, Spring v6.2.1
+2025-04-20 17:52:40 INFO  [main] com.iuh.UserServiceApplication - The following 1 profile is active: "dev"
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 143 ms. Found 5 JPA repository interfaces.
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.InvalidatedTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.PermissionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.UserAddressRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-20 17:52:41 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 7 ms. Found 0 Redis repository interfaces.
+2025-04-20 17:52:41 INFO  [main] o.s.cloud.context.scope.GenericScope - BeanFactory id=bff4dc94-8c75-3844-9226-5d267cc553ae
+2025-04-20 17:52:42 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-04-20 17:52:42 INFO  [main] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-04-20 17:52:42 INFO  [main] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-04-20 17:52:42 INFO  [main] o.a.c.c.C.[.[.[/user-service] - Initializing Spring embedded WebApplicationContext
+2025-04-20 17:52:42 INFO  [main] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1898 ms
+2025-04-20 17:52:42 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-04-20 17:52:42 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.4.Final
+2025-04-20 17:52:42 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-04-20 17:52:42 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-04-20 17:52:42 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-04-20 17:52:43 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@39840986
+2025-04-20 17:52:43 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-04-20 17:52:43 WARN  [main] o.h.e.j.e.i.JdbcEnvironmentInitiator - HHH000339: Could not obtain connection metadata: java.sql.SQLSyntaxErrorException: Unknown column 'RESERVED' in 'WHERE'
+2025-04-20 17:52:43 WARN  [main] org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-04-20 17:52:43 WARN  [main] org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-04-20 17:52:43 INFO  [main] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-04-20 17:52:44 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-04-20 17:52:44 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-04-20 17:52:45 INFO  [main] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-04-20 17:52:46 INFO  [main] c.i.c.ApplicationInitConfig - Initializing application.....
+2025-04-20 17:52:47 WARN  [main] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-04-20 17:52:48 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/user-service'
+2025-04-20 17:52:48 INFO  [main] com.iuh.UserServiceApplication - Started UserServiceApplication in 8.636 seconds (process running for 9.774)
+2025-04-20 17:52:48 INFO  [main] c.i.c.ApplicationInitConfig - Application initialization completed .....
+2025-04-20 17:52:48 INFO  [main] c.i.c.ApplicationInitConfig - swagger-ui: http://localhost:8080/user-service/swagger-ui.html
+2025-04-20 17:54:48 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[.[.[/user-service] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-04-20 17:54:48 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-04-20 17:54:48 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-04-20 17:54:48 INFO  [http-nio-8080-exec-1] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:54:58 INFO  [http-nio-8080-exec-2] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:55:17 INFO  [http-nio-8080-exec-3] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:56:21 INFO  [http-nio-8080-exec-4] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:57:00 INFO  [http-nio-8080-exec-5] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:57:03 INFO  [http-nio-8080-exec-7] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:57:42 INFO  [http-nio-8080-exec-6] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:57:44 INFO  [http-nio-8080-exec-8] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:57:58 INFO  [http-nio-8080-exec-9] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
+2025-04-20 17:58:12 INFO  [http-nio-8080-exec-10] c.iuh.service.impl.UserServiceImpl - Fetching info for current user: null
