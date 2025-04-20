@@ -2,16 +2,16 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { startTransition, useEffect } from 'react'
-import { toast } from 'sonner'
+import { useState, useEffect } from 'react'
 import { Eye } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PaginationWithLinks } from '@/components/ui/pagination-with-links'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { PageOrdersResponse, OrderStatus } from '@/types/order'
+import { PageOrdersResponse, OrderStatus, Order } from '@/types/order'
 import { formatDateTime, formatVND } from '@/utils/format'
+import { OrderDetailDialog } from './order-detail-dialog'
 
 interface OrdersTableProps {
   orders: PageOrdersResponse['data']
@@ -19,6 +19,8 @@ interface OrdersTableProps {
 
 export function OrdersTable({ orders }: OrdersTableProps) {
   const router = useRouter()
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   
   // Debug - log the orders prop when component renders
   useEffect(() => {
@@ -45,6 +47,12 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       default:
         return 'bg-gray-500 text-white hover:bg-gray-600'
     }
+  }
+
+  // Function to handle clicking the eye button
+  const handleViewOrderDetails = (order: Order) => {
+    setSelectedOrder(order)
+    setIsDialogOpen(true)
   }
 
   return (
@@ -84,11 +92,13 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </TableCell>
                   <TableCell className='text-right'>{formatVND(order.total)}</TableCell>
                   <TableCell className='text-center'>
-                    <Link href={`/admin/orders/${order.id}`}>
-                      <Button variant='ghost' size='icon'>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </Link>
+                    <Button 
+                      variant='ghost' 
+                      size='icon'
+                      onClick={() => handleViewOrderDetails(order)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
@@ -110,6 +120,13 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           />
         )}
       </div>
+
+      {/* Order Detail Dialog */}
+      <OrderDetailDialog 
+        order={selectedOrder} 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)}
+      />
     </div>
   )
 }
