@@ -24,14 +24,16 @@ export const createOrder = async (data: OrderSchemaType) => {
 }
 
 export const changeStatus = async (orderId: string, status: OrderStatus) => {
-  console.log(`Updating order ${orderId} to status: ${status}`)
-
-  // The API expects the status in a properly formatted JSON object
   const { payload } = await http.patch<OrderResponse>(
     `/order-service/orders/${orderId}/status`,
     JSON.stringify({ status })
   )
+  return payload
+}
 
-  console.log('API response:', payload)
+export const getAllOrders = async (pageNo: number, pageSize: number, sortBy: string) => {
+  const { payload } = await http.get<PageOrdersResponse>(
+    `/order-service/orders?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`
+  )
   return payload
 }
