@@ -1,0 +1,115 @@
+2025-04-21 19:16:39 INFO  [main] com.iuh.ProductServiceApplication - Starting ProductServiceApplication using Java 21.0.6 with PID 21712 (F:\DoAnKienTruc\hafasa-microservices\product-service\target\classes started by user in F:\DoAnKienTruc\hafasa-microservices)
+2025-04-21 19:16:39 DEBUG [main] com.iuh.ProductServiceApplication - Running with Spring Boot v3.4.1, Spring v6.2.1
+2025-04-21 19:16:39 INFO  [main] com.iuh.ProductServiceApplication - The following 1 profile is active: "dev"
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 196 ms. Found 6 JPA repository interfaces.
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.BookImageRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.BookRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.DiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.PublisherRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.iuh.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-04-21 19:16:40 INFO  [main] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 12 ms. Found 0 Redis repository interfaces.
+2025-04-21 19:16:41 INFO  [main] o.s.cloud.context.scope.GenericScope - BeanFactory id=00df3f07-51d4-3a1d-9e97-9147c02bf915
+2025-04-21 19:16:41 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-04-21 19:16:41 INFO  [main] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-04-21 19:16:41 INFO  [main] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-04-21 19:16:41 INFO  [main] o.a.c.c.C.[.[.[/product-service] - Initializing Spring embedded WebApplicationContext
+2025-04-21 19:16:41 INFO  [main] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2364 ms
+2025-04-21 19:16:42 INFO  [main] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-04-21 19:16:42 INFO  [main] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.4.Final
+2025-04-21 19:16:42 INFO  [main] o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-04-21 19:16:42 INFO  [main] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-04-21 19:16:42 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-04-21 19:16:42 INFO  [main] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3ae87e38
+2025-04-21 19:16:42 INFO  [main] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-04-21 19:16:42 WARN  [main] org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-04-21 19:16:42 WARN  [main] org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-04-21 19:16:42 INFO  [main] o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-04-21 19:16:44 INFO  [main] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-04-21 19:16:44 INFO  [main] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-04-21 19:16:44 INFO  [main] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-04-21 19:16:46 INFO  [main] c.i.c.ApplicationInitConfig - Initializing application.....
+2025-04-21 19:16:47 WARN  [main] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-04-21 19:16:49 INFO  [main] o.s.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-04-21 19:16:49 INFO  [main] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/product-service'
+2025-04-21 19:16:50 INFO  [main] o.s.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-04-21 19:16:50 INFO  [main] com.iuh.ProductServiceApplication - Started ProductServiceApplication in 12.544 seconds (process running for 13.83)
+2025-04-21 19:16:50 INFO  [main] c.i.c.ApplicationInitConfig - Application initialization completed .....
+2025-04-21 19:16:50 INFO  [main] c.i.c.ApplicationInitConfig - swagger-ui: http://localhost:8081/product-service/swagger-ui.html
+2025-04-21 19:33:24 INFO  [http-nio-8081-exec-1] o.a.c.c.C.[.[.[/product-service] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-04-21 19:33:24 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-04-21 19:33:24 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-04-21 19:33:24 INFO  [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Fetching active books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:33:24 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:33:25 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Found 14 active books
+2025-04-21 19:33:25 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponse
+2025-04-21 19:33:25 INFO  [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of active books
+2025-04-21 19:33:26 INFO  [http-nio-8081-exec-3] c.i.service.impl.CategoryServiceImpl - Fetching categories with filters: pageNo=1, pageSize=8, sortBy=createdAt:desc, search=
+2025-04-21 19:33:26 INFO  [http-nio-8081-exec-3] c.i.service.impl.CategoryServiceImpl - Fetched 8 categories
+2025-04-21 19:33:26 INFO  [http-nio-8081-exec-4] c.i.service.impl.CategoryServiceImpl - Fetching categories with filters: pageNo=1, pageSize=8, sortBy=createdAt:desc, search=
+2025-04-21 19:33:26 INFO  [http-nio-8081-exec-4] c.i.service.impl.CategoryServiceImpl - Fetched 8 categories
+2025-04-21 19:34:50 INFO  [http-nio-8081-exec-2] c.iuh.service.impl.BookServiceImpl - Fetching active books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:34:50 DEBUG [http-nio-8081-exec-2] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:34:50 DEBUG [http-nio-8081-exec-2] c.iuh.service.impl.BookServiceImpl - Found 14 active books
+2025-04-21 19:34:51 DEBUG [http-nio-8081-exec-2] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponse
+2025-04-21 19:34:51 INFO  [http-nio-8081-exec-2] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of active books
+2025-04-21 19:34:51 INFO  [http-nio-8081-exec-7] c.i.service.impl.CategoryServiceImpl - Fetching categories with filters: pageNo=1, pageSize=8, sortBy=createdAt:desc, search=
+2025-04-21 19:34:51 INFO  [http-nio-8081-exec-7] c.i.service.impl.CategoryServiceImpl - Fetched 8 categories
+2025-04-21 19:36:31 INFO  [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - Fetching books with specifications: pageNo=1, pageSize=12, sortBy=createdAt:desc, filters=null
+2025-04-21 19:36:31 DEBUG [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - No specifications provided. Falling back to default findAll()
+2025-04-21 19:36:31 INFO  [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - Fetching books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:36:31 DEBUG [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:36:31 DEBUG [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - Found 14 books from database
+2025-04-21 19:36:31 DEBUG [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
+2025-04-21 19:36:31 INFO  [http-nio-8081-exec-8] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 19:36:33 INFO  [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - Fetching books with specifications: pageNo=1, pageSize=12, sortBy=createdAt:desc, filters=null
+2025-04-21 19:36:33 DEBUG [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - No specifications provided. Falling back to default findAll()
+2025-04-21 19:36:33 INFO  [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - Fetching books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:36:33 DEBUG [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:36:33 DEBUG [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - Found 14 books from database
+2025-04-21 19:36:33 DEBUG [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
+2025-04-21 19:36:33 INFO  [http-nio-8081-exec-9] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 19:36:45 INFO  [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - Fetching books with specifications: pageNo=1, pageSize=12, sortBy=createdAt:desc, filters=null
+2025-04-21 19:36:45 DEBUG [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - No specifications provided. Falling back to default findAll()
+2025-04-21 19:36:45 INFO  [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - Fetching books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:36:45 DEBUG [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:36:45 DEBUG [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - Found 14 books from database
+2025-04-21 19:36:45 DEBUG [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
+2025-04-21 19:36:45 INFO  [http-nio-8081-exec-10] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 19:36:50 INFO  [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Fetching books with specifications: pageNo=1, pageSize=12, sortBy=createdAt:desc, filters=null
+2025-04-21 19:36:50 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - No specifications provided. Falling back to default findAll()
+2025-04-21 19:36:50 INFO  [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Fetching books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:36:50 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:36:50 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Found 14 books from database
+2025-04-21 19:36:50 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
+2025-04-21 19:36:50 INFO  [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 19:36:56 INFO  [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - Fetching books with specifications: pageNo=1, pageSize=12, sortBy=createdAt:desc, filters=null
+2025-04-21 19:36:56 DEBUG [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - No specifications provided. Falling back to default findAll()
+2025-04-21 19:36:56 INFO  [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - Fetching books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:36:56 DEBUG [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:36:56 DEBUG [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - Found 14 books from database
+2025-04-21 19:36:56 DEBUG [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
+2025-04-21 19:36:56 INFO  [http-nio-8081-exec-3] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 19:37:28 INFO  [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - Fetching books with specifications: pageNo=1, pageSize=12, sortBy=createdAt:desc, filters=null
+2025-04-21 19:37:28 DEBUG [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - No specifications provided. Falling back to default findAll()
+2025-04-21 19:37:28 INFO  [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - Fetching books with filters: pageNo=1, pageSize=12, sortBy=createdAt:desc, categorySlug=null, search=
+2025-04-21 19:37:28 DEBUG [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - Generated Pageable: Page request [number: 0, size 12, sort: createdAt: DESC]
+2025-04-21 19:37:28 DEBUG [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - Found 14 books from database
+2025-04-21 19:37:28 DEBUG [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
+2025-04-21 19:37:28 INFO  [http-nio-8081-exec-4] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 19:43:56 INFO  [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-04-21 19:43:56 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-04-21 19:43:56 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-04-21 19:43:56 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-04-21 19:43:56 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
