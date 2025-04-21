@@ -2,7 +2,7 @@
 
 import http from '@/lib/http'
 import { getUserInfo } from '@/actions/users/info'
-import { OrderResponse, PageOrdersResponse } from '@/types/order'
+import { OrderResponse, PageOrdersResponse, OrderStatus } from '@/types/order'
 import { OrderSchemaType } from '@/schemas/order'
 
 export const getUserOrders = async (pageNo: number, pageSize: number) => {
@@ -20,5 +20,20 @@ export const getOrderById = async (orderId: string) => {
 
 export const createOrder = async (data: OrderSchemaType) => {
   const { payload } = await http.post<OrderResponse>('/order-service/orders', JSON.stringify(data))
+  return payload
+}
+
+export const changeStatus = async (orderId: string, status: OrderStatus) => {
+  const { payload } = await http.patch<OrderResponse>(
+    `/order-service/orders/${orderId}/status`,
+    JSON.stringify({ status })
+  )
+  return payload
+}
+
+export const getAllOrders = async (pageNo: number, pageSize: number, sortBy: string) => {
+  const { payload } = await http.get<PageOrdersResponse>(
+    `/order-service/orders?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortBy}`
+  )
   return payload
 }

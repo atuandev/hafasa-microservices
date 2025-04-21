@@ -41,3 +41,10 @@ export type PageUsersResponse = {
     items: User[]
   }
 }
+
+export interface UserSearchParams {
+  pageNo?: number
+  pageSize?: number
+  sortBy?: string
+  search?: string
+}

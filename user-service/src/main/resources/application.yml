@@ -15,8 +15,14 @@ spring:
 logging:
   level:
     root: info
+<<<<<<< HEAD
     com.iuh: debug
   file:
     name: logs/user-service.log
+=======
+    com.iuh: debug  # Ghi debug cho package của bạn
+  file:
+    name: logs/user-service.log  # Đường dẫn file log
+>>>>>>> b5fd7fa531fea39bf45f6fc85a439eb0afd663ec
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
