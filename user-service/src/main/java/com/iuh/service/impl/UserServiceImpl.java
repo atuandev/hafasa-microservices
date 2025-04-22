@@ -60,10 +60,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse save(UserCreationRequest request) {
         log.info("Saving new user: {}", request.getUsername());
-<<<<<<< HEAD
 
-=======
->>>>>>> b5fd7fa531fea39bf45f6fc85a439eb0afd663ec
         User user = userMapper.toEntity(request);
         log.debug("Mapped User entity: {}", user);
 
@@ -136,7 +133,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-<<<<<<< HEAD
+
         log.debug("No cache found. Querying database for user: {}", username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -153,18 +150,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(user);
     }
 
-<<<<<<< HEAD
-=======
 
-
-    /**
-     * Update user by id
-     *
-     * @param id      User id
-     * @param request UserUpdateRequest
-     * @return UserResponse
-     */
->>>>>>> b5fd7fa531fea39bf45f6fc85a439eb0afd663ec
     @Override
     @Transactional
     @PostAuthorize("returnObject.username == authentication.name")
