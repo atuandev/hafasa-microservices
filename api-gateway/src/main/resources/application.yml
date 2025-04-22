@@ -62,4 +62,4 @@ openapi:
     title: Hafasa API documentation
     version: 1.0.0
     description: API for managing books in a bookstore
-    server: http://localhost:8080
+    server: http://localhost:${server.port}

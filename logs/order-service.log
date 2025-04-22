@@ -41,3 +41,8 @@
 2025-04-21 21:59:43 INFO  [http-nio-8082-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 11 ms
 2025-04-21 21:59:43 INFO  [http-nio-8082-exec-1] c.iuh.service.impl.OrderServiceImpl - Fetching all orders - pageNo: 1, pageSize: 12, sortBy: createdAt.desc
 2025-04-21 21:59:43 DEBUG [http-nio-8082-exec-1] c.iuh.service.impl.OrderServiceImpl - Fetched 24 orders
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-04-21 22:17:33 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

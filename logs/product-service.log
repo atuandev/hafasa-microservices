@@ -65,3 +65,8 @@
 2025-04-21 21:59:41 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Found 16 books from database
 2025-04-21 21:59:41 DEBUG [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Mapped 12 books to BookResponseAdmin
 2025-04-21 21:59:41 INFO  [http-nio-8081-exec-1] c.iuh.service.impl.BookServiceImpl - Successfully fetched page 1 of books
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-04-21 22:17:33 INFO  [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-04-21 22:17:33 INFO  [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
