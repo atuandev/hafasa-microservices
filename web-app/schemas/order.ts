@@ -1,4 +1,5 @@
-import { z } from "zod"
+import { z } from 'zod'
+import { OrderStatus } from '@/types/order'
 
 export const orderSchema = z.object({
   userId: z.string(),
@@ -17,6 +18,7 @@ export const orderSchema = z.object({
   total: z.number().min(1, {
     message: 'Tổng số tiền không hợp lệ',
   }),
+  orderStatus: z.string().optional(),
   orderDetails: z
     .array(
       z.object({

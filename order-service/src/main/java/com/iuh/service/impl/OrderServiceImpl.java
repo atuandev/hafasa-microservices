@@ -40,10 +40,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse save(OrderCreationRequest request) {
+        log.info("Creating new order for user: {}", request.getUserId());
+        log.debug("OrderCreationRequest details: {}", request);
+
         Order order = orderMapper.toOrder(request);
 
         try {
-            // Prepare batch update request
             List<BookUpdateStockRequest> updateRequests = request.getOrderDetails().stream()
                     .map(detail -> BookUpdateStockRequest.builder()
                             .bookId(detail.getBookId())
@@ -51,9 +53,12 @@ public class OrderServiceImpl implements OrderService {
                             .build())
                     .toList();
 
+            log.debug("Sending book stock update requests: {}", updateRequests);
+
             List<BookResponseAdmin> updatedBooks = bookClient.updateBooks(updateRequests).getData();
 
-            // Create order details using updated books
+            log.debug("Received updated book responses: {}", updatedBooks);
+
             for (int i = 0; i < updatedBooks.size(); i++) {
                 BookResponseAdmin book = updatedBooks.get(i);
                 OrderDetailRequest detailRequest = request.getOrderDetails().get(i);
@@ -65,25 +70,32 @@ public class OrderServiceImpl implements OrderService {
                         .build());
             }
 
-            return orderMapper.toOrderResponse(orderRepository.save(order));
+            Order savedOrder = orderRepository.save(order);
+            log.info("Order saved successfully with ID: {}", savedOrder.getId());
+
+            return orderMapper.toOrderResponse(savedOrder);
         } catch (Exception e) {
-            log.error("Error creating order: ", e);
+            log.error("Error creating order for user: {}", request.getUserId(), e);
             throw new AppException(ErrorCode.ORDER_CREATE_ERROR);
         }
     }
 
     @Override
     public OrderResponse findById(String id) {
+        log.info("Fetching order with ID: {}", id);
         Order order = getOrderById(id);
+        log.debug("Found order: {}", order);
         return orderMapper.toOrderResponse(order);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<Object> findAllOrders(int pageNo, int pageSize, String sortBy) {
+        log.info("Fetching all orders - pageNo: {}, pageSize: {}, sortBy: {}", pageNo, pageSize, sortBy);
         Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
 
         Page<Order> orders = orderRepository.findAll(pageable);
+        log.debug("Fetched {} orders", orders.getTotalElements());
 
         List<OrderResponse> items = orders.map(orderMapper::toOrderResponse).getContent();
 
@@ -92,9 +104,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PageResponse<Object> findAllByUserId(String userId, int pageNo, int pageSize, String sortBy) {
+        log.info("Fetching orders for user: {} - pageNo: {}, pageSize: {}, sortBy: {}", userId, pageNo, pageSize, sortBy);
         Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
 
         Page<Order> orders = orderRepository.findAllByUserId(userId, pageable);
+        log.debug("Fetched {} orders for user: {}", orders.getTotalElements(), userId);
 
         List<OrderResponse> items = orders.map(orderMapper::toOrderResponse).getContent();
 
@@ -104,13 +118,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void changeStatus(String id, OrderStatus status) {
+        log.info("Changing order status - orderId: {}, newStatus: {}", id, status);
         Order order = getOrderById(id);
         order.setOrderStatus(status);
         orderRepository.save(order);
+        log.info("Order status updated successfully - orderId: {}", id);
     }
 
     private Order getOrderById(String id) {
-        return orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        log.debug("Retrieving order by ID: {}", id);
+        return orderRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Order not found with ID: {}", id);
+                    return new AppException(ErrorCode.ORDER_NOT_FOUND);
+                });
     }
-
 }

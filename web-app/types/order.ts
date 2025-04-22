@@ -12,7 +12,7 @@ export type OrderDetail = {
 
 export enum PaymentMethod {
   COD = 'COD',
-  PAYOS = 'PAYOS'
+  PAYOS = 'PAYOS',
 }
 
 export enum OrderStatus {

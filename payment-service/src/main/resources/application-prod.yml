@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+openapi:
+  service:
+    title: Hafasa API documentation
+    version: 1.0.0
+    description: API for managing books in a bookstore
+    server: http://localhost:${server.port}${server.servlet.context-path}
