@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { createOrder } from '@/actions/orders/order'
+import { createPaymentLink } from '@/actions/payment/payment'
 import { TypographyH4, TypographyLarge, TypographySmall } from '@/components/typography'
 import { Button } from '@/components/ui/button'
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
@@ -19,7 +20,7 @@ import { orderSchema, OrderSchemaType } from '@/schemas/order'
 import { useCartStore } from '@/stores/cartStore'
 import { useOrderStore } from '@/stores/orderStore'
 import { PageAddress } from '@/types/address'
-import { OrderDetailRequest, PaymentMethod } from '@/types/order'
+import { OrderDetailRequest, OrderStatus, PaymentMethod } from '@/types/order'
 import { User } from '@/types/user'
 import { formatVND } from '@/utils/format'
 
@@ -73,20 +74,75 @@ export default function FormOrder({ user, addresses }: FormOrderProps) {
   function onSubmit(values: z.infer<typeof orderSchema>) {
     console.log(values)
     startTransition(async () => {
-      const res = await createOrder(values)
+      // For PayOS payment, we'll create the order when payment is successful
+      if (values.paymentMethod === PaymentMethod.PAYOS) {
+        // Create temporary order data
+        const orderData = {
+          ...values,
+          orderStatus: OrderStatus.PENDING
+        }
+        
+        const res = await createOrder(orderData)
 
-      if (res.code !== 1000) {
-        toast.error(res.message)
-        return
+        if (res.code !== 1000) {
+          toast.error(res.message)
+          return
+        }
+
+        const orderId = res.data.id
+        
+        // Create success and cancel URLs for payment
+        const origin = typeof window !== 'undefined' ? window.location.origin : ''
+        const returnUrl = `${origin}/payment/success?orderId=${orderId}`
+        const cancelUrl = `${origin}/payment/cancel?orderId=${orderId}`
+        
+        // Create payment link
+        const paymentRes = await createPaymentLink({
+          orderId,
+          returnUrl,
+          cancelUrl,
+          price: values.total
+        })
+        
+        if (paymentRes.code !== 1000) {
+          toast.error(paymentRes.message || 'Không thể tạo liên kết thanh toán')
+          return
+        }
+        
+        // Redirect to payment gateway
+        if (paymentRes.data?.checkoutUrl) {
+          // Remove selected items from the cart before redirecting
+          values.orderDetails.forEach(item => {
+            removeItem(item.bookId)
+          })
+          
+          if (typeof window !== 'undefined') {
+            window.location.href = paymentRes.data.checkoutUrl
+          }
+          return
+        }
+      } else {
+        // For COD payment, create order directly
+        const orderData = {
+          ...values,
+          orderStatus: OrderStatus.PENDING
+        }
+        
+        const res = await createOrder(orderData)
+
+        if (res.code !== 1000) {
+          toast.error(res.message)
+          return
+        }
+        
+        // Remove selected items from the cart and redirect to orders
+        values.orderDetails.forEach(item => {
+          removeItem(item.bookId)
+        })
+
+        toast.success('Đặt hàng thành công')
+        router.push('/account/orders')
       }
-
-      // Remove selected items from the cart
-      values.orderDetails.forEach(item => {
-        removeItem(item.bookId)
-      })
-
-      toast.success('Đặt hàng thành công')
-      router.push('/account/orders')
     })
   }
 
@@ -140,8 +196,8 @@ export default function FormOrder({ user, addresses }: FormOrderProps) {
               <Label htmlFor='COD'>Thanh toán khi nhận hàng</Label>
             </div>
             <div className='flex items-center space-x-2 p-4'>
-              <RadioGroupItem value={PaymentMethod.VN_PAY} id='VN_PAY' />
-              <Label htmlFor='VN_PAY'>Thanh toán qua VNPay</Label>
+              <RadioGroupItem value={PaymentMethod.PAYOS} id='PAYOS' />
+              <Label htmlFor='PAYOS'>Thanh toán qua PayOS</Label>
             </div>
           </RadioGroup>
         </div>

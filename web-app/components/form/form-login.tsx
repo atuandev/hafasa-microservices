@@ -82,7 +82,7 @@ export function FormLogin() {
               asChild
               className="px-0 font-normal justify-end w-full text-gray-700"
             >
-              <Link href="/login">Quên mật khẩu?</Link>
+              <Link href="/forgot-password">Quên mật khẩu?</Link>
             </Button>
           </div>
           <FormError message={error} />
