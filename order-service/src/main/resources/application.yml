@@ -5,13 +5,41 @@ server:
 
 app:
   api-gateway-url: http://localhost:8000/api/order-service
-  product-service-url: http://localhost:8081/product-service
+  product-service-url: http://product-service
 
 spring:
   application:
     name: order-service
   profiles:
     active: @spring.profiles.active@
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+
+# OpenAPI configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    display-request-duration: true
+    disable-swagger-default-url: true
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
+  packages-to-scan: com.iuh.controller
+  paths-to-match: /**
+  default-produces-media-type: application/json
 
 logging:
   level:
