@@ -9,33 +9,86 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOriginPatterns: "*" # Use allowedOriginPatterns instead of allowedOrigins
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       routes:
+        # Main service routes
         - id: user-service
-          uri: http://localhost:8080
+          uri: lb://user-service
           predicates:
             - Path=${app.api-prefix}/user-service/**
           filters:
             - StripPrefix=1
         - id: product-service
-          uri: http://localhost:8081
+          uri: lb://product-service
           predicates:
             - Path=${app.api-prefix}/product-service/**
           filters:
             - StripPrefix=1
         - id: order-service
-          uri: http://localhost:8082
+          uri: lb://order-service
           predicates:
             - Path=${app.api-prefix}/order-service/**
           filters:
             - StripPrefix=1
         - id: payment-service
-          uri: http://localhost:8083
+          uri: lb://payment-service
           predicates:
             - Path=${app.api-prefix}/payment-service/**
           filters:
             - StripPrefix=1
+
+        # Direct access routes for API documentation
+        - id: order-service-api-docs
+          uri: http://localhost:8082
+          predicates:
+            - Path=/order-service/v3/api-docs/**
+        - id: product-service-api-docs
+          uri: http://localhost:8081
+          predicates:
+            - Path=/product-service/v3/api-docs/**
+        - id: user-service-api-docs
+          uri: http://localhost:8080
+          predicates:
+            - Path=/user-service/v3/api-docs/**
+        - id: payment-service-api-docs
+          uri: http://localhost:8083
+          predicates:
+            - Path=/payment-service/v3/api-docs/**
+
+  cloud.loadbalancer:
+    ribbon:
+      enabled: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Logging configuration
+logging:
+  level:
+    root: info
+    com.iuh: debug
+    org.springframework.cloud.gateway: info
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: info
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: debug
+  file:
+    name: logs/api-gateway.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}] [%thread] %-5level %logger{36} - %msg%n"
 
 # OpenAPI
 springdoc:
@@ -44,19 +97,20 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-    config-url: /v3/api-docs/swagger-config
-    use-root-path: true
     urls:
       - name: API Gateway
         url: /v3/api-docs
       - name: User Service
-        url: ${app.api-prefix}/user-service/v3/api-docs
+        url: /user-service/v3/api-docs
       - name: Product Service
-        url: ${app.api-prefix}/product-service/v3/api-docs
+        url: /product-service/v3/api-docs
       - name: Order Service
-        url: ${app.api-prefix}/order-service/v3/api-docs
+        url: /order-service/v3/api-docs
       - name: Payment Service
-        url: ${app.api-prefix}/payment-service/v3/api-docs
+        url: /payment-service/v3/api-docs
+    config-url: /v3/api-docs/swagger-config
+    use-root-path: true
+
 openapi:
   service:
     title: Hafasa API documentation
