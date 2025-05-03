@@ -76,6 +76,20 @@ eureka:
   instance:
     prefer-ip-address: true
 
+# Logging configuration
+logging:
+  level:
+    root: info
+    com.iuh: debug
+    org.springframework.cloud.gateway: info
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: info
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: debug
+  file:
+    name: logs/api-gateway.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}] [%thread] %-5level %logger{36} - %msg%n"
+
 # OpenAPI
 springdoc:
   api-docs:

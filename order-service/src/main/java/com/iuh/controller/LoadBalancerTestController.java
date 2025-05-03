@@ -1,7 +1,14 @@
 package com.iuh.controller;
 
+import com.iuh.dto.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.InetAddress;
@@ -10,18 +17,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Tag(name = "Load Balancer Test Controller")
 @RestController
+@RequestMapping("/lb-test")
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@Slf4j
 public class LoadBalancerTestController {
-
-    private final String instanceId = UUID.randomUUID().toString().substring(0, 8);
+    
+    // Generate a unique ID for this instance
+    final String instanceId = UUID.randomUUID().toString().substring(0, 8);
     
     @Value("${server.port}")
-    private String serverPort;
-
-    @GetMapping("/lb-test")
-    public Map<String, String> testLoadBalancer() {
-        Map<String, String> response = new HashMap<>();
-        
+    String serverPort;
+    
+    @Value("${spring.application.name}")
+    String applicationName;
+    
+    @Operation(summary = "Test load balancing")
+    @GetMapping
+    public ApiResponse<Map<String, String>> testLoadBalancer() {
         String hostname;
         try {
             hostname = InetAddress.getLocalHost().getHostName();
@@ -29,12 +44,18 @@ public class LoadBalancerTestController {
             hostname = "unknown";
         }
         
-        response.put("message", "Response from order-service instance");
-        response.put("port", serverPort);
-        response.put("hostname", hostname);
-        response.put("instanceId", instanceId);
+        log.info("Load balancer test called on [{}:{}], instance: {}, hostname: {}", 
+                applicationName, serverPort, instanceId, hostname);
         
-        System.out.println("Request received at order-service on port: " + serverPort + ", instance: " + instanceId);
-        return response;
+        Map<String, String> instanceInfo = new HashMap<>();
+        instanceInfo.put("service", applicationName);
+        instanceInfo.put("port", serverPort);
+        instanceInfo.put("instanceId", instanceId);
+        instanceInfo.put("hostname", hostname);
+        
+        return ApiResponse.<Map<String, String>>builder()
+                .message("Load balancer test successful")
+                .data(instanceInfo)
+                .build();
     }
 }

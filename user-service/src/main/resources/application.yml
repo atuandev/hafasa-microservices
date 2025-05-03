@@ -21,12 +21,16 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${server.port}
     prefer-ip-address: true
+    metadata-map:
+      instanceId: ${spring.application.name}:${server.port}
 
 logging:
   level:
     root: info
     com.iuh: debug
+    org.springframework.web.filter.CommonsRequestLoggingFilter: debug
   file:
     name: logs/user-service.log
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
