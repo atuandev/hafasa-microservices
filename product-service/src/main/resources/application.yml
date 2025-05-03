@@ -29,4 +29,4 @@ logging:
   file:
     name: logs/product-service.log
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n" 
