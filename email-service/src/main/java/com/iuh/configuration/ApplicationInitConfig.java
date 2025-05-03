@@ -22,7 +22,7 @@ public class ApplicationInitConfig {
         log.info("Initializing application.....");
         return args -> {
             log.info("Application initialization completed .....");
-            log.info("swagger-ui: http://localhost:8081/product-service/swagger-ui.html");
+            log.info("swagger-ui: http://localhost:8084/email-service/swagger-ui.html");
         };
     }
 }

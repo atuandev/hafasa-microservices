@@ -6,6 +6,12 @@ server:
 app:
   api-gateway-url: http://localhost:8000/api/email-service
 
+brevo:
+  api-key: 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
+  sender:
+    name: Hafasa Bookstore
+    email: truong29042003@gmail.com
+
 spring:
   application:
     name: email-service
