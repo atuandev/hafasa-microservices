@@ -66,7 +66,7 @@ export function CartList() {
   const handleCheckoutClick = (e: React.MouseEvent) => {
     if (!user) {
       e.preventDefault()
-      router.push('/login?redirect=/order')
+      router.push('/order')
     }
   }
 
