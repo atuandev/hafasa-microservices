@@ -11,3 +11,26 @@ spring:
     name: user-service
   profiles:
     active: @spring.profiles.active@
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    metadata-map:
+      instanceId: ${spring.application.name}:${server.port}
+
+logging:
+  level:
+    root: info
+    com.iuh: debug
+    org.springframework.web.filter.CommonsRequestLoggingFilter: debug
+  file:
+    name: logs/user-service.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
