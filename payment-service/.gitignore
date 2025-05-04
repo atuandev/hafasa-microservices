@@ -34,3 +34,8 @@ build/
 application.properties
 
 /libs
+
+### Environment Variables ###
+.env
+*.env
+.env.*
