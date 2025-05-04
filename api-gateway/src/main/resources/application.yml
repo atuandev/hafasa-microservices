@@ -44,6 +44,12 @@ spring:
             - Path=${app.api-prefix}/payment-service/**
           filters:
             - StripPrefix=1
+        - id: email-service
+          uri: lb://email-service
+          predicates:
+            - Path=${app.api-prefix}/email-service/**
+          filters:
+            - StripPrefix=1
 
         # Direct access routes for API documentation
         - id: order-service-api-docs
@@ -62,12 +68,10 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/payment-service/v3/api-docs/**
-        - id: email-service
+        - id: email-service-api-docs
           uri: http://localhost:8084
           predicates:
-            - Path=${app.api-prefix}/email-service/**
-          filters:
-            - StripPrefix=1
+            - Path=/email-service/v3/api-docs/**
 
   cloud.loadbalancer:
     ribbon:
