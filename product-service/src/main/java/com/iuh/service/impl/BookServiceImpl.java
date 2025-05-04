@@ -49,62 +49,145 @@ public class BookServiceImpl implements BookService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public BookResponseAdmin save(BookCreationRequest request) {
-        Book book = bookMapper.toEntity(request);
+        log.info("Starting to save a new book: title={}, slug={}, categorySlug={}, publisherSlug={}, discountCode={}",
+                request.getTitle(), request.getSlug(), request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
 
-        setAssociations(book, request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
-        addBookImages(book, request.getBookImages());
+        try {
+            log.debug("Full book creation request: {}", request); // Useful for debugging
 
-        return saveBook(book);
+            Book book = bookMapper.toEntity(request);
+
+            log.debug("Setting up associations for the book");
+            setAssociations(book, request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
+
+            log.debug("Adding {} book images", request.getBookImages().size());
+            addBookImages(book, request.getBookImages());
+
+            BookResponseAdmin response = saveBook(book);
+            log.info("Book saved successfully: id={}, title={}", response.getId(), response.getTitle());
+
+            return response;
+        } catch (Exception e) {
+            log.error("Error occurred while saving book '{}': {}", request.getTitle(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<Object> findAll(int pageNo, int pageSize, String sortBy, String categorySlug, String search) {
-        Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
-        Page<Book> books = bookRepository.findWithFilterAndSearch(categorySlug, search, search, pageable);
-        List<BookResponseAdmin> items = books.map(bookMapper::toResponseAdmin).getContent();
+        log.info("Fetching books with filters: pageNo={}, pageSize={}, sortBy={}, categorySlug={}, search={}",
+                pageNo, pageSize, sortBy, categorySlug, search);
 
-        return PageUtil.getPageResponse(pageable, books, items);
+        try {
+            Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
+            log.debug("Generated Pageable: {}", pageable);
+
+            Page<Book> books = bookRepository.findWithFilterAndSearch(categorySlug, search, search, pageable);
+            log.debug("Found {} books from database", books.getTotalElements());
+
+            List<BookResponseAdmin> items = books.map(bookMapper::toResponseAdmin).getContent();
+            log.debug("Mapped {} books to BookResponseAdmin", items.size());
+
+            PageResponse<Object> response = PageUtil.getPageResponse(pageable, books, items);
+            log.info("Successfully fetched page {} of books", pageNo);
+
+            return response;
+        } catch (Exception e) {
+            log.error("Error occurred while fetching books: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<Object> findAllSpecifications(int pageNo, int pageSize, String sortBy, String[] books) {
-        if (books == null || books.length == 0) {
-            return findAll(pageNo, pageSize, sortBy, null, "");
+        log.info("Fetching books with specifications: pageNo={}, pageSize={}, sortBy={}, filters={}",
+                pageNo, pageSize, sortBy, books != null ? String.join(", ", books) : "null");
+
+        try {
+            if (books == null || books.length == 0) {
+                log.debug("No specifications provided. Falling back to default findAll()");
+                return findAll(pageNo, pageSize, sortBy, null, "");
+            }
+
+            log.debug("Building specifications from filters");
+            BookSpecificationsBuilder builder = getBookSpecificationsBuilder(books);
+
+            Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
+            log.debug("Generated Pageable: {}", pageable);
+
+            Page<Book> booksPage = bookRepository.findAll(builder.build(), pageable);
+            log.debug("Found {} books with specifications", booksPage.getTotalElements());
+
+            List<BookResponseAdmin> items = booksPage.map(bookMapper::toResponseAdmin).getContent();
+            log.debug("Mapped {} books to BookResponseAdmin", items.size());
+
+            PageResponse<Object> response = PageUtil.getPageResponse(pageable, booksPage, items);
+            log.info("Successfully fetched books with specifications for page {}", pageNo);
+
+            return response;
+        } catch (Exception e) {
+            log.error("Error occurred while fetching books with specifications: {}", e.getMessage(), e);
+            throw e;
         }
-
-        BookSpecificationsBuilder builder = getBookSpecificationsBuilder(books);
-
-        Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
-        Page<Book> booksPage = bookRepository.findAll(builder.build(), pageable);
-        List<BookResponseAdmin> items = booksPage.map(bookMapper::toResponseAdmin).getContent();
-
-        return PageUtil.getPageResponse(pageable, booksPage, items);
     }
 
     @Override
     public PageResponse<Object> findAllBooksStatusActive(int pageNo, int pageSize, String sortBy, String categorySlug, String search) {
-        Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
-        Page<Book> books = bookRepository.findWithFilterAndSearchStatusActive(categorySlug, search, search, pageable);
-        List<BookResponse> items = books.map(bookMapper::toResponse).getContent();
+        log.info("Fetching active books with filters: pageNo={}, pageSize={}, sortBy={}, categorySlug={}, search={}",
+                pageNo, pageSize, sortBy, categorySlug, search);
 
-        return PageUtil.getPageResponse(pageable, books, items);
+        try {
+            Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
+            log.debug("Generated Pageable: {}", pageable);
+            Page<Book> books = bookRepository.findWithFilterAndSearchStatusActive(categorySlug, search, search, pageable);
+            log.debug("Found {} active books", books.getTotalElements());
+
+            List<BookResponse> items = books.map(bookMapper::toResponse).getContent();
+            log.debug("Mapped {} books to BookResponse", items.size());
+
+            PageResponse<Object> response = PageUtil.getPageResponse(pageable, books, items);
+            log.info("Successfully fetched page {} of active books", pageNo);
+
+            return response;
+        } catch (Exception e) {
+            log.error("Error occurred while fetching active books: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
     public PageResponse<Object> findAllSpecificationsActive(int pageNo, int pageSize, String sortBy, String[] books) {
-        if (books == null || books.length == 0) {
-            return findAllBooksStatusActive(pageNo, pageSize, sortBy, null, "");
+        log.info("Fetching books with specifications for active status: pageNo={}, pageSize={}, sortBy={}, filters={}",
+                pageNo, pageSize, sortBy, books != null ? String.join(", ", books) : "null");
+
+        try {
+            if (books == null || books.length == 0) {
+                log.debug("No specifications provided. Falling back to default findAllBooksStatusActive()");
+                return findAllBooksStatusActive(pageNo, pageSize, sortBy, null, "");
+            }
+
+
+            BookSpecificationsBuilder builder = getBookSpecificationsBuilder(books);
+
+            Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
+            log.debug("Generated Pageable: {}", pageable);
+
+            Page<Book> booksPage = bookRepository.findAll(builder.build(), pageable);
+            log.debug("Found {} books with specifications", booksPage.getTotalElements());
+
+            List<BookResponse> items = booksPage.map(bookMapper::toResponse).getContent();
+            log.debug("Mapped {} books to BookResponse", items.size());
+
+            PageResponse<Object> response = PageUtil.getPageResponse(pageable, booksPage, items);
+            log.info("Successfully fetched books with specifications for page {}", pageNo);
+
+            return response;
+        } catch (Exception e) {
+            log.error("Error occurred while fetching books with specifications: {}", e.getMessage(), e);
+            throw e;
         }
-
-        BookSpecificationsBuilder builder = getBookSpecificationsBuilder(books);
-
-        Pageable pageable = PageUtil.getPageable(pageNo, pageSize, sortBy);
-        Page<Book> booksPage = bookRepository.findAll(builder.build(), pageable);
-        List<BookResponse> items = booksPage.map(bookMapper::toResponse).getContent();
-
-        return PageUtil.getPageResponse(pageable, booksPage, items);
     }
 
     @Override
@@ -150,15 +233,32 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public List<BookResponseAdmin> getAndUpdateBooks(List<BookUpdateStockRequest> requests) {
-        return requests.stream().map(request -> {
-            Book book = getBookById(request.getBookId());
-            if (book.getStock() < request.getQuantity()) {
-                throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
-            }
-            book.setStock(book.getStock() - request.getQuantity());
-            book.setSold(book.getSold() + request.getQuantity());
-            return bookMapper.toResponseAdmin(bookRepository.save(book));
-        }).toList();
+        log.info("Updating stock for {} books", requests.size());
+
+        try {
+            List<BookResponseAdmin> updatedBooks = requests.stream().map(request -> {
+                log.debug("Processing stock update for book: id={}, quantity={}", request.getBookId(), request.getQuantity());
+
+                Book book = getBookById(request.getBookId());
+                if (book.getStock() < request.getQuantity()) {
+                    log.error("Book out of stock: id={}, requestedQuantity={}", request.getBookId(), request.getQuantity());
+                    throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
+                }
+
+                book.setStock(book.getStock() - request.getQuantity());
+                book.setSold(book.getSold() + request.getQuantity());
+
+                BookResponseAdmin response = bookMapper.toResponseAdmin(bookRepository.save(book));
+                log.debug("Updated book: id={}, newStock={}, newSold={}", book.getId(), book.getStock(), book.getSold());
+                return response;
+            }).toList();
+
+            log.info("Successfully updated stock for {} books", updatedBooks.size());
+            return updatedBooks;
+        } catch (Exception e) {
+            log.error("Error occurred while updating stock for books: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     private Book getBookById(String bookId) {
