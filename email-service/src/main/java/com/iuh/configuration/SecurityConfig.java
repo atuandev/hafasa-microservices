@@ -25,7 +25,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
             "/books/**", "/categories/**", "/publishers/**", "/reviews/**",
-            "/internal/**", "/email/send"
+            "/internal/**", "/email/**", "/lb-test/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -36,7 +36,10 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+        httpSecurity
+            .cors(cors -> {})
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .anyRequest().authenticated());
 
@@ -46,8 +49,6 @@ public class SecurityConfig {
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-
         return httpSecurity.build();
     }
 
@@ -55,8 +56,9 @@ public class SecurityConfig {
     CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
-        corsConfig.setAllowCredentials(true);
-        corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8000"));
+        // Set allowCredentials to false so we can use wildcard origin
+        corsConfig.setAllowCredentials(false);
+        corsConfig.setAllowedOrigins(List.of("http://localhost:8000", "http://localhost:3000", "*"));
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
 
