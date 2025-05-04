@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @FeignClient(
-        name = "book-service",
-        url = "${app.product-service-url}",
+        name = "product-service",
+        path = "/product-service",  // Add the context path
         configuration = AuthenticationRequestInterceptor.class
 )
 public interface BookClient {

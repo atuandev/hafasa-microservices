@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  # Database
+  mysql:
+    image: mysql:8.4.0
+    container_name: hafasa-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hafasa-network
+
+  # Redis
+  redis:
+    image: redis:7.4.1
+    container_name: hafasa-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hafasa-network
+
+  # API Gateway Service
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: hafasa-api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - hafasa-network
+
+  # User Service
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: hafasa-user-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - path: ./user-service/.env
+        required: true
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hafasa-network
+
+  # Product Service
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    container_name: hafasa-product-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - path: ./product-service/.env
+        required: true # default
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hafasa-network
+
+  # Order Service
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: hafasa-order-service
+    ports:
+      - "8082:8082"
+    env_file:
+      - path: ./order-service/.env
+        required: true 
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hafasa-network
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: hafasa-payment-service
+    ports:
+      - "8003:8003"
+    env_file:
+      - path: ./payment-service/.env
+        required: true # default
+    networks:
+      - hafasa-network
+
+networks:
+  hafasa-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
