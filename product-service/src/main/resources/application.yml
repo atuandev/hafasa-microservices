@@ -11,6 +11,8 @@ spring:
     name: product-service
   profiles:
     active: @spring.profiles.active@
+  elasticsearch:
+    uris: http://localhost:9200
 
 eureka:
   client:
