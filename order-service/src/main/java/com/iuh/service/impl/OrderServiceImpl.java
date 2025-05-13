@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
                         .build());
             }            Order savedOrder = orderRepository.save(order);
             log.info("Order saved successfully with ID: {}", savedOrder.getId());
-            
+            findAllOrders(0, 10, "createdAt:desc");
             // Save to Elasticsearch
             try {
                 OrderDocument orderDocument = orderDocumentMapper.toDocument(savedOrder);
@@ -192,14 +192,15 @@ public class OrderServiceImpl implements OrderService {
      * Scheduled task to synchronize order data with Elasticsearch
      * Runs at midnight every day
      */
+    @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight every day
     public void syncOrdersWithElasticsearch() {
         try {
-            log.info("Performing full reindex of all books to Elasticsearch");
-            // Get all books from the database
+            log.info("Performing full reindex of all orders to Elasticsearch");
+            // Get all orders from the database
             List<Order> allOrders = orderRepository.findAll();
-            log.debug("Found {} books in database for full reindex", allOrders.size());
+            log.debug("Found {} orders in database for full reindex", allOrders.size());
 
-            // Convert books to documents
+            // Convert orders to documents
             List<OrderDocument> documents = allOrders.stream()
                     .map(orderDocumentMapper::toDocument)
                     .toList();
@@ -215,7 +216,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Save all documents
             orderDocumentRepository.saveAll(documents);
-            log.info("Successfully reindexed {} books to Elasticsearch", documents.size());
+            log.info("Successfully reindexed {} orders to Elasticsearch", documents.size());
         } catch (Exception e) {
             log.error("Error during full reindex to Elasticsearch: {}", e.getMessage(), e);
             // Don't propagate exception, just log it
