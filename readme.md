@@ -1,9 +1,11 @@
 # HafaSa Bookstore
 
 ## Requirement
+
 - JDK 21
 
 ## Techs
+
 - Spring Boot
 - Spring Security
 - Spring Data JPA
@@ -15,6 +17,7 @@
 - MySQL
 
 ## Tools
+
 - IntelliJ IDEA 2024
 - Docker
 - HeidiSQL
@@ -22,44 +25,71 @@
 ## Getting Started
 
 ### Dev mode
-1. Clone project: 
+
+1. Clone project:
+
 ```bash
 git clone git@github.com:atuandev/hafasa-microservices.git
 ```
+
 3. Install MySQL from Docker
+
 ```bash
 docker pull mysql:8.4.0
 ```
+
 4. Run Container **MySQL**
+
 ```bash
 docker run --name mysql-8.4.0 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.4.0
 ```
+
 5. Install Redis from Docker
+
 ```bash
 docker pull redis:7.4.1
 ```
+
 6. Run Container **Redis**
+
 ```bash
 docker run --name redis-7.4.1 -p 6379:6379 -d redis:7.4.1
 ```
+
+7.**elasticsearch**
+
+```bash
+docker pull docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+
+docker run -d --name kibana -p 5601:5601 -e "ELASTICSEARCH_HOSTS=http://host.docker.internal:9200" docker.elastic.co/kibana/kibana:8.12.2
+```
+
+7.**kibana**
+
+```bash
+docker pull docker.elastic.co/kibana/kibana:8.12.2
+
+docker run -d --name kibana -p 5601:5601 -e "ELASTICSEARCH_HOSTS=http://host.docker.internal:9200" docker.elastic.co/kibana/kibana:8.12.2
+```
+
 7. Use **Intellij** to run 4 project
-> If error when build, run `mvn clean package`
+   > If error when build, run `mvn clean package`
 
 ![image](https://github.com/user-attachments/assets/791fc958-c802-44a5-8948-bad73d613157)
 
-
 ### Database
+
 - Use HeidiSQL to connect the database with **username**: `root`, **password**: `root`
 - Import data in `/data` folder
 
 ![image](https://github.com/user-attachments/assets/96e321da-49f6-4188-9724-74c2f3d759e1)
 
-### SwaggerUI 
+### SwaggerUI
 
 1. Test API with **Postman** or **SwaggerUI** at `http://localhost:8000/swagger-ui.html`
 2. Login Admin account:
+
 - username: `admin`
 - password: `admin123`
 
 ![image](https://github.com/user-attachments/assets/8b2722fd-8006-4009-a8a3-e44d0c37c92d)
-

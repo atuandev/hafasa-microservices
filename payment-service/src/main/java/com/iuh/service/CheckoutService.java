@@ -8,4 +8,5 @@ import vn.payos.type.PaymentLinkData;
 public interface CheckoutService {
     PaymentCreateLinkResponse createPaymentLink(PaymentCreateLinkRequest request);
     PaymentLinkData cancelPaymentLink(CancelPaymentLinkRequest request);
+    PaymentCreateLinkResponse getPaymentInfoById(Long orderCode);
 }

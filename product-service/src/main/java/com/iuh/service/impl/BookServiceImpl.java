@@ -1,6 +1,7 @@
 package com.iuh.service.impl;
 
 import com.iuh.constant.AppConstant;
+import com.iuh.document.BookDocument;
 import com.iuh.dto.request.BookCreationRequest;
 import com.iuh.dto.request.BookImageRequest;
 import com.iuh.dto.request.BookUpdateRequest;
@@ -13,6 +14,7 @@ import com.iuh.entity.BookImage;
 import com.iuh.enums.BookStatus;
 import com.iuh.exception.AppException;
 import com.iuh.exception.ErrorCode;
+import com.iuh.mapper.BookDocumentMapper;
 import com.iuh.mapper.BookMapper;
 import com.iuh.repository.*;
 import com.iuh.repository.specification.BookSpecificationsBuilder;
@@ -43,7 +45,9 @@ public class BookServiceImpl implements BookService {
     CategoryRepository categoryRepository;
     PublisherRepository publisherRepository;
     DiscountRepository discountRepository;
+    BookDocumentRepository bookDocumentRepository;
     BookMapper bookMapper;
+    BookDocumentMapper bookDocumentMapper;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -61,9 +65,19 @@ public class BookServiceImpl implements BookService {
             setAssociations(book, request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
 
             log.debug("Adding {} book images", request.getBookImages().size());
-            addBookImages(book, request.getBookImages());
-
-            BookResponseAdmin response = saveBook(book);
+            addBookImages(book, request.getBookImages());            BookResponseAdmin response = saveBook(book);
+            
+            // Save to Elasticsearch
+            try {
+                log.debug("Saving book to Elasticsearch: id={}", book.getId());
+                BookDocument bookDocument = bookDocumentMapper.toDocument(book);
+                bookDocumentRepository.save(bookDocument);
+                log.debug("Book successfully saved to Elasticsearch: id={}", book.getId());
+            } catch (Exception e) {
+                log.error("Error saving book to Elasticsearch: id={}, error={}", book.getId(), e.getMessage(), e);
+                // Continue anyway - we don't want to fail the operation if Elasticsearch indexing fails
+            }
+            
             log.info("Book saved successfully: id={}, title={}", response.getId(), response.getTitle());
 
             return response;
@@ -71,9 +85,7 @@ public class BookServiceImpl implements BookService {
             log.error("Error occurred while saving book '{}': {}", request.getTitle(), e.getMessage(), e);
             throw e;
         }
-    }
-
-    @Override
+    }    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<Object> findAll(int pageNo, int pageSize, String sortBy, String categorySlug, String search) {
         log.info("Fetching books with filters: pageNo={}, pageSize={}, sortBy={}, categorySlug={}, search={}",
@@ -86,6 +98,26 @@ public class BookServiceImpl implements BookService {
             Page<Book> books = bookRepository.findWithFilterAndSearch(categorySlug, search, search, pageable);
             log.debug("Found {} books from database", books.getTotalElements());
 
+            // Synchronize with Elasticsearch
+            try {
+                log.debug("Synchronizing books with Elasticsearch");
+                // Batch process books to Elasticsearch
+                List<BookDocument> bookDocuments = books.getContent().stream()
+                        .map(bookDocumentMapper::toDocument)
+                        .toList();
+                
+                bookDocumentRepository.saveAll(bookDocuments);
+                log.debug("Successfully synchronized {} books with Elasticsearch", bookDocuments.size());
+                
+                // Optional: Check if we need to do a full reindex (if this is the first page)
+                if (pageNo == 0 && search.isEmpty() && categorySlug == null) {
+                    syncAllBooksWithElasticsearch();
+                }
+            } catch (Exception e) {
+                log.error("Error synchronizing books with Elasticsearch: {}", e.getMessage(), e);
+                // Continue anyway - we don't want to fail the operation if Elasticsearch indexing fails
+            }
+
             List<BookResponseAdmin> items = books.map(bookMapper::toResponseAdmin).getContent();
             log.debug("Mapped {} books to BookResponseAdmin", items.size());
 
@@ -96,6 +128,40 @@ public class BookServiceImpl implements BookService {
         } catch (Exception e) {
             log.error("Error occurred while fetching books: {}", e.getMessage(), e);
             throw e;
+        }
+    }
+    
+    /**
+     * Synchronize all books from the database to Elasticsearch
+     * This can be used for a full reindex
+     */
+    private void syncAllBooksWithElasticsearch() {
+        try {
+            log.info("Performing full reindex of all books to Elasticsearch");
+            // Get all books from the database
+            List<Book> allBooks = bookRepository.findAll();
+            log.debug("Found {} books in database for full reindex", allBooks.size());
+            
+            // Convert books to documents
+            List<BookDocument> documents = allBooks.stream()
+                    .map(bookDocumentMapper::toDocument)
+                    .toList();
+            
+            // Delete existing index to ensure clean state
+            try {
+                bookDocumentRepository.deleteAll();
+                log.debug("Deleted existing documents from Elasticsearch");
+            } catch (Exception e) {
+                log.warn("Could not delete existing documents: {}", e.getMessage());
+                // Continue with save operation
+            }
+            
+            // Save all documents
+            bookDocumentRepository.saveAll(documents);
+            log.info("Successfully reindexed {} books to Elasticsearch", documents.size());
+        } catch (Exception e) {
+            log.error("Error during full reindex to Elasticsearch: {}", e.getMessage(), e);
+            // Don't propagate exception, just log it
         }
     }
 
@@ -201,33 +267,64 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findBySlug(slug)
                 .map(bookMapper::toResponse)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-    }
-
-    @Override
+    }    @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public BookResponseAdmin update(String id, BookUpdateRequest request) {
+        log.info("Updating book with id: {}", id);
         Book book = getBookById(id);
         bookMapper.toUpdateEntity(book, request);
 
         setAssociations(book, request.getCategorySlug(), request.getPublisherSlug(), request.getDiscountCode());
         updateBookImages(book, request.getBookImages());
 
-        return saveBook(book);
-    }
-
-    @Override
+        BookResponseAdmin response = saveBook(book);
+        
+        // Update in Elasticsearch
+        try {
+            log.debug("Updating book in Elasticsearch: id={}", book.getId());
+            BookDocument bookDocument = bookDocumentMapper.toDocument(book);
+            bookDocumentRepository.save(bookDocument);
+            log.debug("Book successfully updated in Elasticsearch: id={}", book.getId());
+        } catch (Exception e) {
+            log.error("Error updating book in Elasticsearch: id={}, error={}", book.getId(), e.getMessage(), e);
+            // Continue anyway - we don't want to fail the operation if Elasticsearch indexing fails
+        }
+        
+        return response;
+    }    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(String id) {
+        log.info("Deleting book with id: {}", id);
         bookRepository.deleteById(id);
-    }
-
-    @Override
+        
+        // Delete from Elasticsearch
+        try {
+            log.debug("Deleting book from Elasticsearch: id={}", id);
+            bookDocumentRepository.deleteById(id);
+            log.debug("Book successfully deleted from Elasticsearch: id={}", id);
+        } catch (Exception e) {
+            log.error("Error deleting book from Elasticsearch: id={}, error={}", id, e.getMessage(), e);
+            // Continue anyway - we don't want to fail the operation if Elasticsearch deletion fails
+        }
+    }    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void changeStatus(String bookId, BookStatus status) {
+        log.info("Changing book status: id={}, newStatus={}", bookId, status);
         Book book = getBookById(bookId);
         book.setStatus(status);
-        bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+        
+        // Update in Elasticsearch
+        try {
+            log.debug("Updating book status in Elasticsearch: id={}, status={}", bookId, status);
+            BookDocument bookDocument = bookDocumentMapper.toDocument(savedBook);
+            bookDocumentRepository.save(bookDocument);
+            log.debug("Book status successfully updated in Elasticsearch: id={}", bookId);
+        } catch (Exception e) {
+            log.error("Error updating book status in Elasticsearch: id={}, error={}", bookId, e.getMessage(), e);
+            // Continue anyway - we don't want to fail the operation if Elasticsearch indexing fails
+        }
     }
 
     @Override
@@ -243,12 +340,24 @@ public class BookServiceImpl implements BookService {
                 if (book.getStock() < request.getQuantity()) {
                     log.error("Book out of stock: id={}, requestedQuantity={}", request.getBookId(), request.getQuantity());
                     throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
-                }
-
-                book.setStock(book.getStock() - request.getQuantity());
+                }                book.setStock(book.getStock() - request.getQuantity());
                 book.setSold(book.getSold() + request.getQuantity());
 
-                BookResponseAdmin response = bookMapper.toResponseAdmin(bookRepository.save(book));
+                Book savedBook = bookRepository.save(book);
+                BookResponseAdmin response = bookMapper.toResponseAdmin(savedBook);
+                
+                // Update in Elasticsearch
+                try {
+                    log.debug("Updating book stock in Elasticsearch: id={}, newStock={}, newSold={}", 
+                              book.getId(), book.getStock(), book.getSold());
+                    BookDocument bookDocument = bookDocumentMapper.toDocument(savedBook);
+                    bookDocumentRepository.save(bookDocument);
+                    log.debug("Book stock successfully updated in Elasticsearch: id={}", book.getId());
+                } catch (Exception e) {
+                    log.error("Error updating book stock in Elasticsearch: id={}, error={}", 
+                              book.getId(), e.getMessage(), e);
+                    // Continue anyway - we don't want to fail the operation if Elasticsearch indexing fails
+                }
                 log.debug("Updated book: id={}, newStock={}, newSold={}", book.getId(), book.getStock(), book.getSold());
                 return response;
             }).toList();
