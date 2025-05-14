@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { CheckCircle } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
-
+import { useCartStore } from '@/stores/cartStore';
 import { Button } from '@/components/ui/button';
 import { TypographyH2, TypographyLarge } from '@/components/typography';
 import { createOrder, getOrderById } from '@/actions/orders/order';
@@ -13,6 +13,7 @@ import { OrderStatus } from '@/types/order';
 
 export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
+  const { removeItem } = useCartStore(); // ✅ Thêm dòng này
   const [orderId, setOrderId] = useState<string | null>(null)
 
 useEffect(() => {
@@ -35,6 +36,12 @@ useEffect(() => {
         console.error('Failed to create order:', response.message)
       } else {
         toast.success('Tạo đơn hàng thành công')
+
+          // ✅ XÓA GIỎ HÀNG Ở ĐÂY
+  orderData.orderDetails.forEach((item: any) => {
+    removeItem(item.bookId);
+  });
+
         // Xóa dữ liệu sau khi đã tạo đơn hàng thành công
         sessionStorage.removeItem('pendingOrderData')
       }
