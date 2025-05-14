@@ -10,6 +10,7 @@ spring:
   application:
     name: user-service
   profiles:
+<<<<<<< HEAD
     active: @spring.profiles.active@
 
 logging:
@@ -26,3 +27,6 @@ logging:
 >>>>>>> b5fd7fa531fea39bf45f6fc85a439eb0afd663ec
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+=======
+    active: @spring.profiles.active@
+>>>>>>> 91fe5f1ecdaf3ce1a2bc1267640a2d0e75f8133f
