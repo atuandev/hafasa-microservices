@@ -61,7 +61,7 @@ docker run --name redis-7.4.1 -p 6379:6379 -d redis:7.4.1
 ```bash
 docker pull docker.elastic.co/elasticsearch/elasticsearch:8.12.2
 
-docker run -d --name kibana -p 5601:5601 -e "ELASTICSEARCH_HOSTS=http://host.docker.internal:9200" docker.elastic.co/kibana/kibana:8.12.2
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "xpack.security.enabled=false" docker.elastic.co/elasticsearch/elasticsearch:8.12.2
 ```
 
 7.**kibana**

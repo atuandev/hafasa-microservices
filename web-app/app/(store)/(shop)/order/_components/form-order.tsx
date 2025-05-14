@@ -100,9 +100,9 @@ if (values.paymentMethod === PaymentMethod.PAYOS) {
     return
   }
   if (paymentRes.data?.checkoutUrl) {
-    values.orderDetails.forEach(item => {
-      removeItem(item.bookId)
-    })
+    // values.orderDetails.forEach(item => {
+    //   removeItem(item.bookId)
+    // })
 
     if (typeof window !== 'undefined') {
       // Store the cancelUrl in sessionStorage for timeout handling
