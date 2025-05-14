@@ -75,53 +75,54 @@ export default function FormOrder({ user, addresses }: FormOrderProps) {
     console.log(values)
     startTransition(async () => {
       // For PayOS payment, we'll create the order when payment is successful
-      if (values.paymentMethod === PaymentMethod.PAYOS) {
-        // Create temporary order data
-        const orderData = {
-          ...values,
-          orderStatus: OrderStatus.PENDING
-        }
-        
-        const res = await createOrder(orderData)
+if (values.paymentMethod === PaymentMethod.PAYOS) {
+  const orderData = {
+    ...values,
+    orderStatus: OrderStatus.PENDING
+  }
 
-        if (res.code !== 1000) {
-          toast.error(res.message)
-          return
-        }
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem('pendingOrderData', JSON.stringify(orderData))
+  }
 
-        const orderId = res.data.id
-        
-        // Create success and cancel URLs for payment
-        const origin = typeof window !== 'undefined' ? window.location.origin : ''
-        const returnUrl = `${origin}/payment/success?orderId=${orderId}`
-        const cancelUrl = `${origin}/payment/cancel?orderId=${orderId}`
-        
-        // Create payment link
-        const paymentRes = await createPaymentLink({
-          orderId,
-          returnUrl,
-          cancelUrl,
-          price: values.total
-        })
-        
-        if (paymentRes.code !== 1000) {
-          toast.error(paymentRes.message || 'Không thể tạo liên kết thanh toán')
-          return
-        }
-        
-        // Redirect to payment gateway
-        if (paymentRes.data?.checkoutUrl) {
-          // Remove selected items from the cart before redirecting
-          values.orderDetails.forEach(item => {
-            removeItem(item.bookId)
-          })
-          
-          if (typeof window !== 'undefined') {
-            window.location.href = paymentRes.data.checkoutUrl
-          }
-          return
-        }
-      } else {
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const returnUrl = `${origin}/payment/success`
+  const cancelUrl = `${origin}/payment/cancel`
+
+  const paymentRes = await createPaymentLink({
+    returnUrl,
+    cancelUrl,
+    price: values.total
+  })
+
+  if (paymentRes.code !== 1000) {
+    toast.error(paymentRes.message || 'Không thể tạo liên kết thanh toán')
+    return
+  }
+  if (paymentRes.data?.checkoutUrl) {
+    values.orderDetails.forEach(item => {
+      removeItem(item.bookId)
+    })
+
+    if (typeof window !== 'undefined') {
+      // Store the cancelUrl in sessionStorage for timeout handling
+      sessionStorage.setItem('cancelUrl', cancelUrl);
+      
+      // Set a timeout to redirect to cancelUrl after 5 minutes (300000ms)
+      const timeoutId = setTimeout(() => {
+        window.location.href = cancelUrl;
+      }, 300000);
+      
+      // Store the timeout ID so it can be cleared if payment completes
+      sessionStorage.setItem('paymentTimeoutId', timeoutId.toString());
+      
+      // Redirect to the payment page
+      window.location.href = paymentRes.data.checkoutUrl;
+    }
+    return
+  }
+}
+else {
         // For COD payment, create order directly
         const orderData = {
           ...values,
