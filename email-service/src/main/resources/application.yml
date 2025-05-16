@@ -17,6 +17,11 @@ spring:
     name: email-service
   profiles:
     active: @spring.profiles.active@
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
   client:
