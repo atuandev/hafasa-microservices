@@ -29,29 +29,10 @@ export function BookReviews({ bookId }: BookReviewsProps) {
       try {
         const response = await getBookReviews(bookId, currentPage, 5, 'createdAt:desc', selectedRating)
         
-        // Ensure we have data and handle different possible structures
-        if (response && response.data && response.data.items) {
-          // For structure with data.items
-          setReviews(response.data.items)
-          setTotalPages(response.data.totalPages || 0)
-          setTotalItems(response.data.totalItems || 0)
-        } else if (response && response.items) {
-          // For structure with items directly
-          setReviews(response.items)
-          setTotalPages(response.totalPages || 0)
-          setTotalItems(response.totalItems || 0)
-        } else if (response && response.content) {
-          // For structure with content field
-          setReviews(response.content)
-          setTotalPages(response.totalPages || 0)
-          setTotalItems(response.totalElements || 0)
-        } else {
-          // Default to empty array if no valid structure is found
-          console.error('Unexpected response format:', response)
-          setReviews([])
-          setTotalPages(0)
-          setTotalItems(0)
-        }
+        // Since our action now returns a consistent structure, we can use it directly
+        setReviews(response.items || [])
+        setTotalPages(response.totalPages || 0)
+        setTotalItems(response.totalItems || 0)
       } catch (error) {
         console.error('Error fetching reviews:', error)
         setError(true)
@@ -139,7 +120,7 @@ export function BookReviews({ bookId }: BookReviewsProps) {
                     {formatDate(new Date(review.createdAt))}
                   </TypographyMuted>
                 </div>
-                <p className="text-sm">{review.comment || review.comment}</p>
+                <p className="text-sm">{review.comment}</p>
               </div>
             ))}
           </div>
