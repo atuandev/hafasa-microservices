@@ -5,13 +5,12 @@ import com.iuh.dto.request.CancelPaymentLinkRequest;
 import com.iuh.dto.request.PaymentCreateLinkRequest;
 import com.iuh.dto.response.PaymentCreateLinkResponse;
 import com.iuh.service.CheckoutService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.payos.type.PaymentLinkData;
 
 @Tag(name = "Payment Controller")
@@ -43,6 +42,14 @@ public class CheckoutController {
                 .message("Payment link cancelled successfully")
                 .data(checkoutService.cancelPaymentLink(body))
                 .build();
+    }
+
+//    @Operation(summary = "ADMIN: Get payment info by orderCode")
+    @GetMapping("/{orderCode}")
+    public ApiResponse<PaymentCreateLinkResponse> getPaymentLinkDetails(@PathVariable Long orderCode) {
+        return ApiResponse.<PaymentCreateLinkResponse>builder()
+                .message("Get book details successfully")
+                .data(checkoutService.getPaymentInfoById(orderCode)).build();
     }
 
 }

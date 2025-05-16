@@ -10,23 +10,27 @@ spring:
   application:
     name: user-service
   profiles:
-<<<<<<< HEAD
     active: @spring.profiles.active@
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    metadata-map:
+      instanceId: ${spring.application.name}:${server.port}
 
 logging:
   level:
     root: info
-<<<<<<< HEAD
     com.iuh: debug
+    org.springframework.web.filter.CommonsRequestLoggingFilter: debug
   file:
     name: logs/user-service.log
-=======
-    com.iuh: debug  # Ghi debug cho package của bạn
-  file:
-    name: logs/user-service.log  # Đường dẫn file log
->>>>>>> b5fd7fa531fea39bf45f6fc85a439eb0afd663ec
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
-=======
-    active: @spring.profiles.active@
->>>>>>> 91fe5f1ecdaf3ce1a2bc1267640a2d0e75f8133f
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"

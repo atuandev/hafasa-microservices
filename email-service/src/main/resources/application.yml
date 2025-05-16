@@ -1,0 +1,39 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /email-service
+
+app:
+  api-gateway-url: http://localhost:8000/api/email-service
+
+brevo:
+  api-key: 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
+  sender:
+    name: Hafasa Bookstore
+    email: truong29042003@gmail.com
+
+spring:
+  application:
+    name: email-service
+  profiles:
+    active: @spring.profiles.active@
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+
+logging:
+  level:
+    root: info
+    com.iuh: debug
+  file:
+    name: logs/email-service.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"

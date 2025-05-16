@@ -10,9 +10,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class PaymentCreateLinkResponse {
     long orderCode;
-    String orderId;
+//    String orderId;
     int price;
     String checkoutUrl;
     String returnUrl;
     String cancelUrl;
+    String status;
 }
