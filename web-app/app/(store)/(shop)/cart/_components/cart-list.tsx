@@ -62,10 +62,12 @@ export function CartList() {
   const totalPrices = books
     .filter((item) => selectedItems.includes(item.book.id))
     .reduce((acc, item) => acc + item.book.discountPrice * item.quantity, 0 )
-    
   const handleCheckoutClick = (e: React.MouseEvent) => {
     if (!user) {
-      e.preventDefault()
+      // Redirect to login with a redirect parameter that points back to the order page
+      router.push(`/login?redirect=${encodeURIComponent('/order')}`)
+    } else {
+      // Directly navigate to the order page when user is already logged in
       router.push('/order')
     }
   }
@@ -135,9 +137,9 @@ export function CartList() {
               <TypographySmall>Tổng số tiền (gồm VAT)</TypographySmall>
               <TypographyLarge className="text-primary">{formatVND(totalPrices)}</TypographyLarge>
             </div>
-            <Link href="/order" onClick={handleCheckoutClick}>
-              <Button className="w-full mt-4">Thanh toán</Button>
-            </Link>
+            {/* <Link href="/order" onClick={handleCheckoutClick}> */}
+              <Button className="w-full mt-4" onClick={handleCheckoutClick}>Thanh toán</Button>
+            {/* </Link> */}
           </div>
         </div>
       ) : (
