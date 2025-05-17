@@ -2,8 +2,11 @@ package com.iuh.controller;
 
 import com.iuh.dto.ApiResponse;
 import com.iuh.dto.request.OrderEmailRequest;
+import com.iuh.dto.request.OtpRequest;
+import com.iuh.dto.request.OtpVerificationRequest;
 import com.iuh.dto.request.SendEmailRequest;
 import com.iuh.dto.response.EmailResponse;
+import com.iuh.dto.response.OtpResponse;
 import com.iuh.messaging.EmailMessageProducer;
 import com.iuh.service.EmailService;
 import lombok.AccessLevel;
@@ -45,5 +48,19 @@ public class EmailController {
         // Send the rating to RabbitMQ
         emailMessageProducer.sendEmailRating(messageId, rating);
         return ApiResponse.<String>builder().result("Email rating received").build();
+    }
+
+    @PostMapping("/email/otp/send")
+    ApiResponse<OtpResponse> sendOtpEmail(@RequestBody OtpRequest request) {
+        log.info("Received OTP email request for email: {}", request.getEmail());
+        OtpResponse response = emailService.sendOtpEmail(request);
+        return ApiResponse.<OtpResponse>builder().result(response).build();
+    }
+
+    @PostMapping("/email/otp/verify")
+    ApiResponse<Boolean> verifyOtp(@RequestBody OtpVerificationRequest request) {
+        log.info("Received OTP verification request for email: {}", request.getEmail());
+        boolean isValid = emailService.verifyOtp(request);
+        return ApiResponse.<Boolean>builder().result(isValid).build();
     }
 }
