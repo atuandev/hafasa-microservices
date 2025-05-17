@@ -8,7 +8,7 @@ import { refreshAccessToken } from './actions/auth/refresh'
 const ROUTES = {
   protected: ['/account'],
   admin: ['/admin'],
-  auth: ['/login', '/register']
+  auth: ['/login', '/register'],
 }
 
 // Extended JWT payload type
@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const accessToken = request.cookies.get('accessToken')?.value
   const refreshToken = request.cookies.get('refreshToken')?.value
-  
+
   // Set up response with path header
   const headers = new Headers(request.headers)
   headers.set('x-current-path', pathname)
@@ -35,9 +35,14 @@ export async function middleware(request: NextRequest) {
   if (accessToken) {
     // Redirect authenticated users away from auth pages
     if (isMatchingRoute(pathname, ROUTES.auth)) {
-      return NextResponse.redirect(new URL('/account', request.url))
+      const redirectParam = request.nextUrl.searchParams.get('redirect')
+      if (redirectParam) {
+        return NextResponse.redirect(new URL(redirectParam, request.url))
+      } else {
+        return NextResponse.redirect(new URL('/account', request.url))
+      }
     }
-    
+
     // Restrict admin routes to admin users
     if (isMatchingRoute(pathname, ROUTES.admin)) {
       const decoded = decodeToken(accessToken)
@@ -61,10 +66,10 @@ export async function middleware(request: NextRequest) {
 async function handleTokenRefresh(accessToken: string, refreshToken: string, response: NextResponse) {
   try {
     const decoded = decodeToken(accessToken)
-    
+
     if (decoded?.exp && decoded.exp < Date.now() / 1000) {
       const payload = await refreshAccessToken(refreshToken)
-      
+
       if (payload?.data?.accessToken && payload?.data?.refreshToken) {
         response.cookies.set('accessToken', payload.data.accessToken, {
           httpOnly: true,
