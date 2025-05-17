@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Star, Loader2 } from 'lucide-react'
+import { Star, Loader2, User } from 'lucide-react'
 import { formatDate } from '@/utils/format'
 import { Review } from '@/types/review'
+import { User as UserType } from '@/types/user'
 import { Button } from '@/components/ui/button'
 import { TypographyLarge, TypographyMuted } from '@/components/typography'
 import { getBookReviews } from '@/actions/books/reviews'
+import { getUserById } from '@/actions/users/user-by-id'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 type BookReviewsProps = {
   bookId: string
@@ -14,13 +17,13 @@ type BookReviewsProps = {
 
 export function BookReviews({ bookId }: BookReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [userMap, setUserMap] = useState<Record<string, UserType>>({})
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [totalItems, setTotalItems] = useState(0)
   const [selectedRating, setSelectedRating] = useState(0)
   const [error, setError] = useState(false)
-
   useEffect(() => {
     const fetchReviews = async () => {
       setLoading(true)
@@ -30,9 +33,30 @@ export function BookReviews({ bookId }: BookReviewsProps) {
         const response = await getBookReviews(bookId, currentPage, 5, 'createdAt:desc', selectedRating)
         
         // Since our action now returns a consistent structure, we can use it directly
-        setReviews(response.items || [])
+        const reviewData = response.items || []
+        setReviews(reviewData)
         setTotalPages(response.totalPages || 0)
         setTotalItems(response.totalItems || 0)
+        
+        // Fetch user details for each review
+        const userIds = reviewData.map(review => review.userId)
+        const uniqueUserIds = [...new Set(userIds)]
+        
+        const newUserMap: Record<string, UserType> = {}
+        await Promise.all(
+          uniqueUserIds.map(async (userId) => {
+            try {
+              const userData = await getUserById(userId)
+              if (userData) {
+                newUserMap[userId] = userData
+              }
+            } catch (error) {
+              console.error(`Error fetching user ${userId}:`, error)
+            }
+          })
+        )
+        
+        setUserMap(newUserMap)
       } catch (error) {
         console.error('Error fetching reviews:', error)
         setError(true)
@@ -110,15 +134,25 @@ export function BookReviews({ bookId }: BookReviewsProps) {
         <>
           <div className="space-y-6">
             {reviews.map((review) => (
-              <div key={review.id} className="border-b pb-4">
-                <div className="flex items-center gap-2 mb-1">
+              <div key={review.id} className="border-b pb-4">                <div className="flex items-center gap-2 mb-1">
                   {renderStars(review.rating)}
-                </div>
-                <div className="mb-2">
-                  <span className="font-medium">{review.userName}</span>
-                  <TypographyMuted className="ml-2">
-                    {formatDate(new Date(review.createdAt))}
-                  </TypographyMuted>
+                </div>                <div className="flex items-center gap-3 mb-2">
+                  <Avatar className="size-10 border">
+                    {userMap[review.userId]?.avatar ? (
+                      <AvatarImage src={userMap[review.userId].avatar} />
+                    ) : (
+                      <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${userMap[review.userId]?.name || review.userName}`} />
+                    )}
+                    <AvatarFallback>
+                      <User size={16} />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{userMap[review.userId]?.name || review.userName}</span>
+                    <TypographyMuted className="text-xs">
+                      {formatDate(new Date(review.createdAt))}
+                    </TypographyMuted>
+                  </div>
                 </div>
                 <p className="text-sm">{review.comment}</p>
               </div>
