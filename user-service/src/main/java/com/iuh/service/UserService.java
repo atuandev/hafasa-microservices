@@ -1,6 +1,8 @@
 package com.iuh.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.iuh.dto.request.ForgotPasswordRequest;
+import com.iuh.dto.request.ResetPasswordRequest;
 import com.iuh.dto.request.UserCreationRequest;
 import com.iuh.dto.request.UserUpdateAvatarRequest;
 import com.iuh.dto.request.UserUpdatePasswordRequest;
@@ -29,4 +31,18 @@ public interface UserService {
     void updatePassword(String id, UserUpdatePasswordRequest request) throws JsonProcessingException;
 
     void updateAvatar(String id, UserUpdateAvatarRequest request) throws JsonProcessingException;
+
+    /**
+     * Initiates the forgot password process by sending an OTP to the user's email
+     * @param request the forgot password request containing the user's email
+     * @return the OTP response containing the token and expiry time
+     */
+    Object forgotPassword(ForgotPasswordRequest request);
+
+    /**
+     * Resets the user's password after verifying the OTP
+     * @param request the reset password request containing the email, OTP, token, and new password
+     * @return true if the password was reset successfully, false otherwise
+     */
+    boolean resetPassword(ResetPasswordRequest request);
 }
