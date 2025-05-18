@@ -66,14 +66,38 @@ export const checkReviewExists = async (
   bookId: string,
   userId: string
 ): Promise<Review | null> => {
+  if (!userId || !bookId) {
+    console.log('Missing userId or bookId in checkReviewExists', { userId, bookId })
+    return null
+  }
+
   try {
-    const { payload } = await http.get<{ data: Review | null }>(
-      `/product-service/reviews/check?bookId=${bookId}&userId=${userId}`
+    // First, try direct check if supported by backend
+    try {
+      const { payload } = await http.get<{ data: Review | null }>(
+        `/product-service/reviews/check?bookId=${bookId}&userId=${userId}`
+      )
+      
+      if (payload && payload.data) {
+        console.log('Found review via direct check:', payload.data)
+        return payload.data
+      }
+    } catch (directCheckError) {
+      // Fallback approach - this is more reliable but less efficient
+      console.log('Direct check failed, trying fallback approach')
+    }
+
+    // Fallback: Get all user reviews and filter by bookId
+    const { payload } = await http.get<PageReviewsResponse>(
+      `/product-service/reviews/user/${userId}?pageSize=100`
     )
     
-    if (payload && payload.data) {
-      return payload.data
+    if (payload?.data?.items) {
+      const existingReview = payload.data.items.find(review => review.book?.id === bookId)
+      console.log('Existing review found via user reviews:', existingReview || 'none')
+      return existingReview || null
     }
+    
     return null
   } catch (error) {
     console.error('Error checking if review exists:', error)
@@ -102,5 +126,41 @@ export const addReview = async (
   } catch (error) {
     console.error('Error adding review:', error)
     throw new Error('Failed to add review. Please try again.')
+  }
+}
+
+export const updateReview = async (
+  reviewId: string,
+  updateData: {
+    rating: number
+    comment: string
+  }
+): Promise<Review | null> => {
+  try {
+    const { payload } = await http.put<{ data: Review }>(
+      `/product-service/reviews/${reviewId}`,
+      JSON.stringify({
+        rating: updateData.rating,
+        comment: updateData.comment
+      })
+    )
+    
+    if (payload && payload.data) {
+      return payload.data
+    }
+    return null
+  } catch (error) {
+    console.error('Error updating review:', error)
+    throw new Error('Failed to update review. Please try again.')
+  }
+}
+
+export const deleteReview = async (reviewId: string): Promise<boolean> => {
+  try {
+    await http.delete(`/product-service/reviews/${reviewId}`)
+    return true
+  } catch (error) {
+    console.error('Error deleting review:', error)
+    throw new Error('Failed to delete review. Please try again.')
   }
 }

@@ -11,6 +11,11 @@ import { AddReviewButton } from './add-review-button'
 import { ReviewDisplay } from './review-display'
 import { Review } from '@/types/review'
 import { checkReviewExists } from '@/actions/books/reviews'
+import { 
+  hasReviewedBook, 
+  saveReviewToStorage, 
+  removeReviewFromStorage 
+} from '@/utils/review-storage'
 
 type OrderDetailsItemProps = {
   bookId: string
@@ -36,14 +41,23 @@ export function OrderDetailsItem({ bookId, price, quantity, orderId }: OrderDeta
   }, [])
 
   const userId = user?.id
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const bookResult = await getBookById(bookId)
         setBook(bookResult.data)
         
-        if (userId) {
+        // First check localStorage to see if this book has been reviewed
+        const reviewedLocally = typeof window !== 'undefined' && hasReviewedBook(bookId)
+        
+        // If found in localStorage, get the review details from the API
+        if (reviewedLocally && userId) {
+          console.log(`Book ${bookId} found in localStorage as reviewed, fetching details`)
+          const review = await checkReviewExists(bookId, userId)
+          setExistingReview(review)
+        } 
+        // If not found in localStorage, still check API for better data consistency
+        else if (userId) {
           const review = await checkReviewExists(bookId, userId)
           setExistingReview(review)
         }
@@ -62,11 +76,50 @@ export function OrderDetailsItem({ bookId, price, quantity, orderId }: OrderDeta
   }
 
   const subtotal = price * quantity
-
   const handleReviewAdded = (review: Review) => {
     setExistingReview(review)
+    // Note: AddReviewButton already handles saving to localStorage,
+    // but adding it here for redundancy/safety
+    if (typeof window !== 'undefined' && review.id) {
+      try {
+        // Import is already at the top of the file
+        saveReviewToStorage(bookId, review.id)
+      } catch (error) {
+        console.error('Error in handleReviewAdded saving to localStorage:', error)
+      }
+    }
+  }  // Create a temporary review if we know from localStorage that the book was reviewed
+  // but haven't yet fetched the details (or if the API call failed)
+  const localReviewExists = typeof window !== 'undefined' && hasReviewedBook(bookId)
+  const showReviewDisplay = existingReview || localReviewExists
+  
+  // Fallback review object when we know from localStorage that there's a review
+  // but don't have the details yet
+  const fallbackReview: Review = {
+    id: 'temporary-id',
+    comment: 'Đã đánh giá',
+    rating: 5,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    userId: userId || '',
+    userName: '',
+    status: 'ACTIVE',
+    book: {
+      id: bookId,
+      title: book?.title || ''
+    }
   }
-
+  
+  // Handle review updates
+  const handleReviewUpdated = (updatedReview: Review) => {
+    setExistingReview(updatedReview)
+  }
+  
+  // Handle review deletions
+  const handleReviewDeleted = () => {
+    setExistingReview(null)
+  }
+  
   return (
     <div className="grid grid-cols-12 gap-2 items-center py-3 px-2">
       {/* Product column - matches col-span-4 from header */}
@@ -114,8 +167,13 @@ export function OrderDetailsItem({ bookId, price, quantity, orderId }: OrderDeta
       
       {/* Review column - center aligned to match header */}
       <div className="col-span-2 flex justify-center">
-        {existingReview ? (
-          <ReviewDisplay review={existingReview} />
+        {showReviewDisplay ? (
+          <ReviewDisplay 
+            review={existingReview || fallbackReview}
+            bookTitle={book?.title || ''}
+            onReviewUpdated={handleReviewUpdated}
+            onReviewDeleted={handleReviewDeleted}
+          />
         ) : (
           <AddReviewButton 
             bookId={bookId} 

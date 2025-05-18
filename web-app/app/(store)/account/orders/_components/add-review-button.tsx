@@ -18,6 +18,7 @@ import { Review } from '@/types/review'
 import { toast } from 'sonner'
 import Image from 'next/image'
 import { userStore } from '@/stores/userStore'
+import { saveReviewToStorage } from '@/utils/review-storage'
 
 type AddReviewButtonProps = {
   bookId: string
@@ -102,10 +103,12 @@ export function AddReviewButton({
       }
 
       console.log('Submitting review with data:', reviewData)
-      
-      const review = await addReview(reviewData)
+        const review = await addReview(reviewData)
       
       if (review) {
+        // Save review info to localStorage to persist across page reloads
+        saveReviewToStorage(bookId, review.id)
+        
         toast.success('Đánh giá thành công')
         onReviewAdded(review)
         setOpen(false)
