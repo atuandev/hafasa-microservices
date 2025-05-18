@@ -57,7 +57,7 @@ public class UserSpecificationsBuilder {
         if (params.isEmpty())
             return null;
 
-        Specification<User> result = new SearchSpecification<>(params.getFirst());
+        Specification<User> result = new SearchSpecification<>(params.get(0));
 
         for (int i = 1; i < params.size(); i++) {
             result = params.get(i).isOrPredicate()
