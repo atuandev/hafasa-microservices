@@ -137,6 +137,9 @@ export const updateReview = async (
   }
 ): Promise<Review | null> => {
   try {
+    console.log('Updating review:', reviewId, updateData);
+    
+    // Use the correct endpoint format shown in your Swagger UI
     const { payload } = await http.put<{ data: Review }>(
       `/product-service/reviews/${reviewId}`,
       JSON.stringify({
@@ -145,7 +148,12 @@ export const updateReview = async (
       })
     )
     
+    console.log('Update response:', payload);
+    
     if (payload && payload.data) {
+      // Add a small delay to ensure the API has time to process
+      // This helps with rapid edits
+      await new Promise(resolve => setTimeout(resolve, 300))
       return payload.data
     }
     return null
@@ -157,7 +165,12 @@ export const updateReview = async (
 
 export const deleteReview = async (reviewId: string): Promise<boolean> => {
   try {
+    console.log('Deleting review:', reviewId);
+    
+    // Use the correct endpoint format shown in your Swagger UI
     await http.delete(`/product-service/reviews/${reviewId}`)
+    
+    console.log('Review deleted successfully');
     return true
   } catch (error) {
     console.error('Error deleting review:', error)

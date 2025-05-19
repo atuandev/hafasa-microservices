@@ -112,7 +112,18 @@ export function OrderDetailsItem({ bookId, price, quantity, orderId }: OrderDeta
   
   // Handle review updates
   const handleReviewUpdated = (updatedReview: Review) => {
-    setExistingReview(updatedReview)
+    console.log('Review updated:', updatedReview)
+    
+    // Make sure to update the state with the FULL updated review object
+    // This ensures we have all the data needed for future edits
+    setExistingReview({
+      ...updatedReview,
+      // Ensure the book object is preserved if it's missing in the API response
+      book: updatedReview.book || existingReview?.book || {
+        id: bookId,
+        title: book?.title || ''
+      }
+    })
   }
   
   // Handle review deletions

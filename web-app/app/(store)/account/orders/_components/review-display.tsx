@@ -32,7 +32,7 @@ export function ReviewDisplay({ review, bookTitle = "", onReviewUpdated, onRevie
   const createdDate = review.createdAt ? new Date(review.createdAt) : new Date()
   const formattedDate = formatDate(createdDate)
   
-  // Close dropdown when clicking outside
+  // Handle clicks outside the dropdown to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -50,6 +50,9 @@ export function ReviewDisplay({ review, bookTitle = "", onReviewUpdated, onRevie
     setIsDropdownOpen(!isDropdownOpen)
   }
   
+  // Don't allow editing of temporary reviews
+  const isTemporary = review.id === 'temporary-id'
+  
   return (
     <TooltipProvider>
       <div className="relative" ref={dropdownRef}>
@@ -60,8 +63,9 @@ export function ReviewDisplay({ review, bookTitle = "", onReviewUpdated, onRevie
               size="sm" 
               className="flex items-center gap-1 h-9 px-3"
               onClick={toggleDropdown}
+              disabled={isTemporary}
             >
-              <div className="flex">
+              <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
@@ -70,14 +74,16 @@ export function ReviewDisplay({ review, bookTitle = "", onReviewUpdated, onRevie
                   />
                 ))}
               </div>
-              <span className="ml-1">Đã đánh giá</span>
-              <ChevronDown 
-                size={12} 
-                className={cn(
-                  "ml-1 transition-transform duration-200",
-                  isDropdownOpen && "transform rotate-180"
-                )}
-              />
+              <span className="ml-1 text-xs">Đã đánh giá</span>
+              {!isTemporary && (
+                <ChevronDown 
+                  size={12} 
+                  className={cn(
+                    "ml-1 transition-transform duration-200",
+                    isDropdownOpen && "transform rotate-180"
+                  )}
+                />
+              )}
             </Button>
           </TooltipTrigger>
           
@@ -98,8 +104,8 @@ export function ReviewDisplay({ review, bookTitle = "", onReviewUpdated, onRevie
           </TooltipContent>
         </Tooltip>
         
-        {/* Custom dropdown menu */}
-        {isDropdownOpen && (
+        {/* Don't show dropdown for temporary reviews */}
+        {isDropdownOpen && !isTemporary && (
           <div className="absolute z-50 top-full mt-1 right-0 w-auto min-w-[150px] bg-white border rounded-md shadow-md p-3">
             <div className="space-y-2">
               <div className="text-sm font-medium">Tùy chọn đánh giá</div>
@@ -113,5 +119,6 @@ export function ReviewDisplay({ review, bookTitle = "", onReviewUpdated, onRevie
           </div>
         )}
       </div>
-    </TooltipProvider>  )
+    </TooltipProvider>
+  )
 }

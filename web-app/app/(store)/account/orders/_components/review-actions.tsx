@@ -1,25 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Star } from 'lucide-react'
-import { Review } from '@/types/review'
-import { toast } from 'sonner'
-import { updateReview, deleteReview } from '@/actions/books/reviews'
-import { 
-  markReviewAsEdited, 
-  hasReviewBeenEdited,
-  removeReviewFromStorage 
-} from '@/utils/review-storage'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
+import { useState } from "react"
+import { Review } from "@/types/review"
+import { Button } from "@/components/ui/button"
+import { Star, Pencil, Trash2 } from "lucide-react"
+import { updateReview, deleteReview } from "@/actions/books/reviews"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
+import { Label } from "@/components/ui/label"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,39 +16,36 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
-} from '@/components/ui/alert-dialog'
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 type ReviewActionsProps = {
   review: Review
   bookTitle: string
-  onReviewUpdated: (review: Review) => void
+  onReviewUpdated: (updatedReview: Review) => void
   onReviewDeleted: () => void
 }
 
-export function ReviewActions({ 
-  review, 
-  bookTitle,
-  onReviewUpdated,
-  onReviewDeleted
-}: ReviewActionsProps) {
-  // State for dialogs
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  
-  // State for form
+export function ReviewActions({ review, bookTitle, onReviewUpdated, onReviewDeleted }: ReviewActionsProps) {
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [rating, setRating] = useState(review.rating)
   const [comment, setComment] = useState(review.comment)
-  const [submitting, setSubmitting] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
-  // Check if review has been edited before
-  const hasBeenEdited = hasReviewBeenEdited(review.book?.id || '')
-  const editDisabled = hasBeenEdited
-
-  const handleEditSubmit = async () => {
+  const handleEditClick = () => {
+    setIsEditMode(true)
+  }
+  
+  const handleCancelEdit = () => {
+    setRating(review.rating)
+    setComment(review.comment)
+    setIsEditMode(false)
+  }
+  
+  const handleSubmitEdit = async () => {
     try {
-      setSubmitting(true)
+      setIsSubmitting(true)
       
       if (rating < 1 || rating > 5) {
         toast.error('Vui lòng chọn số sao từ 1 đến 5')
@@ -72,141 +57,130 @@ export function ReviewActions({
         return
       }
       
+      console.log('Updating review:', review.id, { rating, comment })
       const updatedReview = await updateReview(review.id, { rating, comment })
       
       if (updatedReview) {
-        // Mark this review as edited in localStorage
-        markReviewAsEdited(review.book?.id || '')
-        
         toast.success('Cập nhật đánh giá thành công')
         onReviewUpdated(updatedReview)
-        setEditDialogOpen(false)
+        setIsEditMode(false)
       } else {
-        toast.error('Có lỗi xảy ra khi cập nhật đánh giá')
+        toast.error('Có lỗi xảy ra, vui lòng thử lại sau')
       }
     } catch (error) {
       console.error('Error updating review:', error)
-      toast.error('Có lỗi xảy ra khi cập nhật đánh giá')
+      toast.error('Có lỗi xảy ra, vui lòng thử lại sau')
     } finally {
-      setSubmitting(false)
+      setIsSubmitting(false)
     }
   }
   
-  const handleDelete = async () => {
+  const handleDeleteConfirm = async () => {
     try {
-      setDeleting(true)
+      setIsSubmitting(true)
+      
+      console.log('Deleting review:', review.id)
       const success = await deleteReview(review.id)
       
       if (success) {
-        // Remove from localStorage
-        removeReviewFromStorage(review.book?.id || '')
-        
         toast.success('Xóa đánh giá thành công')
+        setIsDeleteDialogOpen(false)
         onReviewDeleted()
       } else {
-        toast.error('Có lỗi xảy ra khi xóa đánh giá')
+        toast.error('Có lỗi xảy ra, vui lòng thử lại sau')
       }
-      setDeleteDialogOpen(false)
     } catch (error) {
       console.error('Error deleting review:', error)
-      toast.error('Có lỗi xảy ra khi xóa đánh giá')
-      setDeleteDialogOpen(false)
+      toast.error('Có lỗi xảy ra, vui lòng thử lại sau')
     } finally {
-      setDeleting(false)
+      setIsSubmitting(false)
     }
   }
-
-  return (
-    <div className="flex gap-2">
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={() => setEditDialogOpen(true)}
-        disabled={editDisabled}
-        title={editDisabled ? 'Đánh giá chỉ có thể sửa một lần' : 'Sửa đánh giá'}
-      >
-        {editDisabled ? 'Đã chỉnh sửa' : 'Sửa'}
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={() => setDeleteDialogOpen(true)}
-        className="hover:bg-destructive hover:text-destructive-foreground"
-      >
-        Xóa
-      </Button>
-      
-      {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Chỉnh sửa đánh giá</DialogTitle>
-            <DialogDescription>
-              Sản phẩm: {bookTitle}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <Label>Đánh giá</Label>
-              <div className="flex items-center gap-1 mt-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={24}
-                    className={`cursor-pointer transition-colors ${
-                      star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-200'
-                    }`}
-                    onClick={() => setRating(star)}
-                  />
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="edit-comment">Nội dung</Label>
-              <Textarea 
-                id="edit-comment"
-                placeholder="Nhập đánh giá của bạn..."
-                rows={4}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="mt-2"
+  
+  if (isEditMode) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <Label>Đánh giá</Label>
+          <div className="flex items-center gap-1 mt-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                size={18}
+                className={`cursor-pointer transition-colors ${
+                  star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 hover:text-yellow-200'
+                }`}
+                onClick={() => setRating(star)}
               />
-            </div>
-            
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Hủy</Button>
-              <Button 
-                onClick={handleEditSubmit} 
-                disabled={submitting || !comment.trim()}
-              >
-                {submitting ? 'Đang cập nhật...' : 'Cập nhật đánh giá'}
-              </Button>
-            </div>
+            ))}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+        
+        <div>
+          <Label>Nội dung</Label>
+          <Textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Nhập đánh giá của bạn..."
+            className="mt-2"
+            rows={3}
+          />
+        </div>
+        
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" size="sm" onClick={handleCancelEdit} disabled={isSubmitting}>
+            Hủy
+          </Button>
+          <Button size="sm" onClick={handleSubmitEdit} disabled={isSubmitting}>
+            {isSubmitting ? 'Đang lưu...' : 'Lưu'}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="flex flex-col gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleEditClick}
+        className="flex items-center justify-start gap-2"
+        title="Chỉnh sửa đánh giá"
+      >
+        <Pencil size={14} /> 
+        <span>Chỉnh sửa</span>
+      </Button>
       
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      {/* <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setIsDeleteDialogOpen(true)}
+        className="flex items-center justify-start gap-2 hover:text-red-500"
+      >
+        <Trash2 size={14} /> Xóa
+      </Button> */}
+      
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa đánh giá</AlertDialogTitle>
+            <AlertDialogTitle>Xóa đánh giá</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa đánh giá này không? 
+              Bạn có chắc chắn muốn xóa đánh giá cho sách "{bookTitle}"? 
               Hành động này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel disabled={isSubmitting}>Hủy</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={handleDelete}
-              disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => { 
+                e.preventDefault() 
+                handleDeleteConfirm() 
+              }}
+              disabled={isSubmitting}
+              className="bg-red-500 hover:bg-red-600"
             >
-              {deleting ? 'Đang xóa...' : 'Xóa đánh giá'}
+              {isSubmitting ? 'Đang xóa...' : 'Xóa'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
