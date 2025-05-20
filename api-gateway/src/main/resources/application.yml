@@ -7,6 +7,10 @@ app:
 spring:
   application:
     name: api-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
   cloud:
     gateway:
       globalcors:
@@ -26,30 +30,55 @@ spring:
             - Path=${app.api-prefix}/user-service/**
           filters:
             - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
         - id: product-service
           uri: lb://product-service
           predicates:
             - Path=${app.api-prefix}/product-service/**
           filters:
             - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 2
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=${app.api-prefix}/order-service/**
           filters:
             - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 3
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=${app.api-prefix}/payment-service/**
           filters:
             - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 4
         - id: email-service
           uri: lb://email-service
           predicates:
             - Path=${app.api-prefix}/email-service/**
           filters:
             - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 5
 
         # Direct access routes for API documentation
         - id: order-service-api-docs
