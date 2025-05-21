@@ -36,11 +36,11 @@ export function FormLogin() {
     setSuccess('')
     startTransition(async () => {
       const res = await login(data)
-      if (res && res.code === 1000) {
+      if (res && res.code !== 1000) {
+        setError('Tài khoản hoặc mật khẩu không chính xác')
+      } else {
         setSuccess('Đăng nhập thành công')
         router.push(redirect)
-      } else {
-        setError('Tài khoản hoặc mật khẩu không chính xác')
       }
     })
   }

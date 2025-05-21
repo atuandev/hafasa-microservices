@@ -10,7 +10,7 @@ export const login = async (data: LoginSchemaType): Promise<TokenResponse> => {
 
   const cookiesStore = await cookies()
 
-  if (payload.data.accessToken && payload.data.refreshToken) {
+  if (payload?.data?.accessToken && payload?.data?.refreshToken) {
     cookiesStore.set({
       name: 'accessToken',
       value: payload.data.accessToken,
