@@ -6,3 +6,10 @@ export const formatVND = (price: number) => {
 export const formatDateTime = (date: string) => {
   return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'medium' }).format(new Date(date))
 }
+export function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date);
+}

@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
         String enumKey = Objects.requireNonNull(e.getFieldError()).getDefaultMessage();
         ErrorCode errorCode = ErrorCode.valueOf(enumKey);
 
-        var constraintViolation = e.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
+        var constraintViolation = e.getBindingResult().getAllErrors().get(0).unwrap(ConstraintViolation.class);
         var attributes = constraintViolation.getConstraintDescriptor().getAttributes();
         log.info("Attributes: {}", attributes.toString());
 
