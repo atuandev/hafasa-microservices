@@ -2,6 +2,8 @@ package com.iuh.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.iuh.dto.ApiResponse;
+import com.iuh.dto.request.ForgotPasswordRequest;
+import com.iuh.dto.request.ResetPasswordRequest;
 import com.iuh.dto.request.UserCreationRequest;
 import com.iuh.dto.request.UserUpdateAvatarRequest;
 import com.iuh.dto.request.UserUpdatePasswordRequest;
@@ -122,4 +124,18 @@ public class UserController {
         return ApiResponse.<Void>builder().message("Avatar updated successfully").build();
     }
 
+    @Operation(summary = "Forgot password - Send OTP")
+    @PostMapping("/forgot-password")
+    ApiResponse<Object> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+        return ApiResponse.builder()
+                .message("OTP sent successfully")
+                .data(userService.forgotPassword(request)).build();
+    }
+
+    @Operation(summary = "Reset password with OTP")
+    @PostMapping("/reset-password")
+    ApiResponse<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        userService.resetPassword(request);
+        return ApiResponse.<Void>builder().message("Password reset successfully").build();
+    }
 }

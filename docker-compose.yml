@@ -119,6 +119,43 @@ services:
     networks:
       - hafasa-network
 
+  # Email Service
+  email-service:
+    build:
+      context: ./email-service
+      dockerfile: Dockerfile
+    container_name: hafasa-email-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - hafasa-network
+
+  # RabbitMQ Service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hafasa-rabbitmq
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # Management UI port
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hafasa-network
+
 networks:
   hafasa-network:
     driver: bridge
@@ -126,3 +163,4 @@ networks:
 volumes:
   mysql_data:
   redis_data:
+  rabbitmq_data:
