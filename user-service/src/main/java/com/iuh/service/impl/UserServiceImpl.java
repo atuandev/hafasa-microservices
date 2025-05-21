@@ -71,6 +71,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse save(UserCreationRequest request) {
+
+        log.info("Saving new user: {}", request.getUsername());
+
+
         User user = userMapper.toEntity(request);
 
         String avatarName = user.getName().replace(" ", "+");
@@ -94,6 +98,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse findById(String id) {
+
+        log.info("Finding user by ID: {}", id);
         User user = getUserById(id);
         updateCacheUser(user, 1);
         return userMapper.toResponse(user);
@@ -113,18 +119,30 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isNotEmpty(userJson)) {
             try {
                 User cachedUser = redisObjectMapper.readValue(userJson, User.class);
+
+                log.info("Loaded user info from cache for: {}", username);
+
+                log.debug("Parsed cached user entity: {}", cachedUser);
+
                 return userMapper.toResponse(cachedUser);
             } catch (JsonProcessingException e) {
                 throw new AppException(ErrorCode.JSON_PROCESSING_ERROR);
             }
         }
 
-        // If not cached, get user info from database and cache it
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.debug("No cache found. Querying database for user: {}", username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.debug("Fetched user from DB: {}", user);
+
         updateCacheUser(user, 1);
+        log.debug("Updated cache for current user: {}", username);
+        updateCacheUser(user, 1);
+
 
         return userMapper.toResponse(user);
     }
+
 
     /**
      * Update user by id
