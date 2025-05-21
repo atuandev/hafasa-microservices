@@ -1,0 +1,38 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /payment-service
+
+app:
+  api-gateway-url: http://localhost:8000/api/payment-service
+
+spring:
+  application:
+    name: payment-service
+  profiles:
+    active: @spring.profiles.active@
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+
+payos:
+  CLIENT_ID: cdc84c41-205e-4b62-bef8-f2b2fd7f851e
+  API_KEY: 20f11e69-b4e1-45ce-9085-7f3d33897a31
+  CHECKSUM_KEY: 2c3be869c1c73aa7fe4c5f87d50f42b99e2ce35903c8567f58880422e39938bf
+
+logging:
+  level:
+    root: info
+    com.iuh: debug
+  file:
+    name: logs/payment-service.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [${spring.application.name}:${server.port}] [%thread] %-5level %logger{36} - %msg%n"

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,10 @@ public class ApplicationInitConfig {
     static final String ADMIN_PASSWORD = "admin123";
 
     PasswordEncoder passwordEncoder;
+
+    @NonFinal
+    @Value("${server.port}")
+    String serverPort;
 
     @Bean
     @ConditionalOnProperty(
@@ -65,7 +70,7 @@ public class ApplicationInitConfig {
                 log.warn("Admin user created with username: 'admin' and password: 'admin123', please change it!");
             }
             log.info("Application initialization completed .....");
-            log.info("swagger-ui: http://localhost:8080/user-service/swagger-ui.html");
+            log.info("swagger-ui: http://localhost:{}/user-service/swagger-ui.html", serverPort);
         };
     }
 }

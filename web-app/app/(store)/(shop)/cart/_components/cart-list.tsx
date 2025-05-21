@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { useCartStore } from '@/stores/cartStore'
 import { formatVND } from '@/utils/format'
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { TypographyH4, TypographyLarge, TypographyMuted, TypographySmall } from '@/components/typography'
 import { Container } from '@/components/common/container'
 import { useOrderStore } from '@/stores/orderStore'
+import { userStore } from '@/stores/userStore'
 
 export function CartList() {
   const { books, increaseQuantity, decreaseQuantity, removeItem } = useCartStore()
@@ -19,6 +21,8 @@ export function CartList() {
   const [cartCount, setCartCount] = useState(0)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [selectAll, setSelectAll] = useState(false)
+  const { user } = userStore()
+  const router = useRouter()
 
   useEffect(() => {
     setCartCount(books?.length || 0)
@@ -58,6 +62,15 @@ export function CartList() {
   const totalPrices = books
     .filter((item) => selectedItems.includes(item.book.id))
     .reduce((acc, item) => acc + item.book.discountPrice * item.quantity, 0 )
+  const handleCheckoutClick = (e: React.MouseEvent) => {
+    if (!user) {
+      // Redirect to login with a redirect parameter that points back to the order page
+      router.push(`/login?redirect=${encodeURIComponent('/order')}`)
+    } else {
+      // Directly navigate to the order page when user is already logged in
+      router.push('/order')
+    }
+  }
 
   return (
     <div className="min-h-[70vh]">
@@ -124,9 +137,9 @@ export function CartList() {
               <TypographySmall>Tổng số tiền (gồm VAT)</TypographySmall>
               <TypographyLarge className="text-primary">{formatVND(totalPrices)}</TypographyLarge>
             </div>
-            <Link href="/order">
-              <Button className="w-full mt-4">Thanh toán</Button>
-            </Link>
+            {/* <Link href="/order" onClick={handleCheckoutClick}> */}
+              <Button className="w-full mt-4" onClick={handleCheckoutClick}>Thanh toán</Button>
+            {/* </Link> */}
           </div>
         </div>
       ) : (
