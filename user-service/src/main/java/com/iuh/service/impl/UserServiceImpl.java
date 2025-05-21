@@ -5,10 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iuh.constant.AppConstant;
 import com.iuh.constant.PredefinedRole;
 import com.iuh.constant.RedisKey;
+import com.iuh.dto.request.ForgotPasswordRequest;
+import com.iuh.dto.request.OtpRequest;
+import com.iuh.dto.request.OtpVerificationRequest;
+import com.iuh.dto.request.ResetPasswordRequest;
 import com.iuh.dto.request.UserCreationRequest;
 import com.iuh.dto.request.UserUpdateAvatarRequest;
 import com.iuh.dto.request.UserUpdatePasswordRequest;
 import com.iuh.dto.request.UserUpdateRequest;
+import com.iuh.dto.response.OtpResponse;
 import com.iuh.dto.response.PageResponse;
 import com.iuh.dto.response.UserResponse;
 import com.iuh.entity.Role;
@@ -19,6 +24,7 @@ import com.iuh.exception.ErrorCode;
 import com.iuh.mapper.UserMapper;
 import com.iuh.repository.RoleRepository;
 import com.iuh.repository.UserRepository;
+import com.iuh.repository.httpclient.EmailClient;
 import com.iuh.repository.specification.UserSpecificationsBuilder;
 import com.iuh.service.RedisService;
 import com.iuh.service.UserService;
@@ -53,6 +59,7 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RedisService<String, String, String> redisService;
+    EmailClient emailClient;
     ObjectMapper redisObjectMapper;
 
     /**
@@ -243,5 +250,77 @@ public class UserServiceImpl implements UserService {
 
     private void deleteCacheUser(String username) {
         redisService.delete(RedisKey.USER_INFO, username);
+    }
+
+    /**
+     * Initiates the forgot password process by sending an OTP to the user's email
+     * @param request the forgot password request containing the user's email
+     * @return the OTP response containing the token and expiry time
+     */
+    @Override
+    public Object forgotPassword(ForgotPasswordRequest request) {
+        // Check if user exists
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Create OTP request
+        OtpRequest otpRequest = OtpRequest.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .build();
+
+        try {
+            // Send OTP email
+            return emailClient.sendOtpEmail(otpRequest).getData();
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.CANNOT_SEND_EMAIL);
+        }
+    }
+
+    /**
+     * Resets the user's password after verifying the OTP
+     * @param request the reset password request containing the email, OTP, token, and new password
+     * @return true if the password was reset successfully, false otherwise
+     */
+    @Override
+    public boolean resetPassword(ResetPasswordRequest request) {
+        // Check if passwords match
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+        }
+
+        // Check if user exists
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Create OTP verification request
+        OtpVerificationRequest otpVerificationRequest = OtpVerificationRequest.builder()
+                .email(request.getEmail())
+                .otp(request.getOtp())
+                .token(request.getToken())
+                .build();
+
+        try {
+            // Verify OTP
+            boolean isValid = emailClient.verifyOtp(otpVerificationRequest).getData();
+
+            if (!isValid) {
+                throw new AppException(ErrorCode.INVALID_OTP);
+            }
+
+            // Update password
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            // Update cache
+            updateCacheUser(user, 1);
+
+            return true;
+        } catch (Exception e) {
+            if (e instanceof AppException) {
+                throw e;
+            }
+            throw new AppException(ErrorCode.INVALID_OTP);
+        }
     }
 }

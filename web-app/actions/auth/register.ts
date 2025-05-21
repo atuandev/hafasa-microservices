@@ -5,15 +5,25 @@ import http from '@/lib/http'
 import { UserResponse } from '@/types/user'
 import { login } from '@/actions/auth/login'
 
-export const register = async (data: RegisterSchemaType) => {
-  const { payload } = await http.post<UserResponse>(`/user-service/users/add`, JSON.stringify(data))
-  if (payload.code === 1000) {
-    const loginRequest = {
-      username: data.username,
-      password: data.password,
-    }
-    await login(loginRequest)
-  }
-  return payload
-}
+import { sendRegistrationOtp } from '@/actions/auth/send-otp'
+import { redirect } from 'next/navigation'
 
+export const register = async (data: RegisterSchemaType) => {
+  // Send OTP to user's email
+  const otpResponse = await sendRegistrationOtp(data)
+
+  if (!otpResponse.success) {
+    return {
+      code: 1001,
+      message: otpResponse.message || 'Failed to send OTP'
+    }
+  }
+
+  // Encode registration data to pass in URL
+  const encodedData = encodeURIComponent(JSON.stringify(data))
+
+  // Redirect to OTP verification page with necessary parameters
+  const redirectUrl = `/verify-otp?email=${encodeURIComponent(data.email)}&token=${otpResponse.token}&expiryTime=${otpResponse.expiryTime}&registrationData=${encodedData}`
+
+  redirect(redirectUrl)
+}

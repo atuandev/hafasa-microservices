@@ -3,13 +3,17 @@ package com.iuh.service;
 import com.iuh.configuration.BrevoConfig;
 import com.iuh.dto.request.EmailRequest;
 import com.iuh.dto.request.OrderEmailRequest;
+import com.iuh.dto.request.OtpRequest;
+import com.iuh.dto.request.OtpVerificationRequest;
 import com.iuh.dto.request.Recipient;
 import com.iuh.dto.request.SendEmailRequest;
 import com.iuh.dto.request.Sender;
 import com.iuh.dto.response.EmailResponse;
+import com.iuh.dto.response.OtpResponse;
 import com.iuh.exception.AppException;
 import com.iuh.exception.ErrorCode;
 import com.iuh.repository.httpclient.EmailClient;
+import com.iuh.util.OtpUtil;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,7 @@ import java.util.Locale;
 public class EmailService {
     EmailClient emailClient;
     BrevoConfig brevoConfig;
+    OtpUtil otpUtil;
 
     public EmailResponse sendEmail(SendEmailRequest request) {
         log.info("Sending email to: {}", request.getTo().getEmail());
@@ -138,5 +143,88 @@ public class EmailService {
                 .build();
 
         return sendEmail(emailRequest);
+    }
+
+    /**
+     * Sends an OTP email to the specified recipient
+     * @param request the OTP request containing the recipient's email and name
+     * @return the OTP response containing the token and expiry time
+     */
+    public OtpResponse sendOtpEmail(OtpRequest request) {
+        log.info("Sending OTP email to: {}", request.getEmail());
+
+        // Generate OTP
+        String otp = otpUtil.generateOtp();
+
+        // Create token
+        String token = otpUtil.createToken(request.getEmail(), otp);
+
+        // Get expiry time
+        long expiryTime = otpUtil.getExpiryTimeFromToken(token);
+
+        // Create recipient
+        Recipient recipient = Recipient.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .build();
+
+        // Build HTML email content
+        StringBuilder htmlContent = new StringBuilder();
+        htmlContent.append("<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>");
+
+        // Header
+        htmlContent.append("<div style='background-color: #f8f9fa; padding: 20px; text-align: center;'>");
+        htmlContent.append("<h1 style='color: #0066cc;'>Hafasa Bookstore</h1>");
+        htmlContent.append("</div>");
+
+        // Content
+        htmlContent.append("<div style='padding: 20px;'>");
+        htmlContent.append("<p>Xin chào <strong>").append(request.getName()).append("</strong>,</p>");
+        htmlContent.append("<p>Mã xác thực OTP của bạn là:</p>");
+        htmlContent.append("<div style='text-align: center; margin: 30px 0;'>");
+        htmlContent.append("<div style='font-size: 32px; font-weight: bold; letter-spacing: 5px; background-color: #f0f0f0; padding: 15px; border-radius: 5px;'>").append(otp).append("</div>");
+        htmlContent.append("</div>");
+        htmlContent.append("<p>Mã này sẽ hết hạn sau 5 phút.</p>");
+        htmlContent.append("<p>Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này.</p>");
+        htmlContent.append("<p>Trân trọng,<br>Đội ngũ Hafasa Bookstore</p>");
+        htmlContent.append("</div>");
+
+        // Footer
+        htmlContent.append("<div style='background-color: #f8f9fa; padding: 20px; text-align: center;'>");
+        htmlContent.append("<p>© 2023 Hafasa Bookstore. All rights reserved.</p>");
+        htmlContent.append("</div>");
+
+        htmlContent.append("</div>");
+
+        // Create and send email
+        SendEmailRequest emailRequest = SendEmailRequest.builder()
+                .to(recipient)
+                .subject("Mã xác thực OTP - Hafasa Bookstore")
+                .htmlContent(htmlContent.toString())
+                .build();
+
+        try {
+            EmailResponse emailResponse = sendEmail(emailRequest);
+            log.info("OTP email sent successfully with messageId: {}", emailResponse.getMessageId());
+
+            return OtpResponse.builder()
+                    .token(token)
+                    .expiryTime(expiryTime)
+                    .message("OTP sent successfully")
+                    .build();
+        } catch (Exception e) {
+            log.error("Failed to send OTP email: {}", e.getMessage(), e);
+            throw new AppException(ErrorCode.CANNOT_SEND_EMAIL);
+        }
+    }
+
+    /**
+     * Verifies an OTP against a token
+     * @param request the OTP verification request containing the email, OTP, and token
+     * @return true if the OTP is valid, false otherwise
+     */
+    public boolean verifyOtp(OtpVerificationRequest request) {
+        log.info("Verifying OTP for email: {}", request.getEmail());
+        return otpUtil.verifyOtp(request.getEmail(), request.getOtp(), request.getToken());
     }
 }

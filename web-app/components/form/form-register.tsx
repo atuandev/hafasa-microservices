@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -16,7 +15,6 @@ import { RegisterSchema, RegisterSchemaType } from '@/schemas/auth/register'
 import { register } from '@/actions/auth/register'
 
 export function FormRegister() {
-  const router = useRouter()
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isSpending, startTransition] = useTransition()
@@ -32,14 +30,23 @@ export function FormRegister() {
   })
 
   const onSubmit = (data: RegisterSchemaType) => {
+    setError('')
+    setSuccess('')
+
     startTransition(async () => {
       try {
-        await register(data)
-        setSuccess('Đăng ký thành công')
-        router.push('/account')
+        // The register function now redirects to OTP verification page if successful
+        const result = await register(data)
+
+        // If we get here, it means there was an error (no redirect happened)
+        if (result && result.message) {
+          setError(result.message)
+        } else {
+          setError('Đăng ký thất bại. Vui lòng thử lại sau.')
+        }
       } catch (error) {
         console.error(error)
-        setError('Đăng ký thất bại')
+        setError('Đăng ký thất bại. Vui lòng thử lại sau.')
       }
     })
   }
