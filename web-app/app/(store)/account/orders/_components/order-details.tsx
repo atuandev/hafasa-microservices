@@ -35,20 +35,34 @@ export async function OrderDetails({ orderId }: OrderDetailProps) {
         <TypographyMuted>
           Phương thức thanh toán: <TypographySmall>{order.paymentMethod}</TypographySmall>
         </TypographyMuted>
-      </div>
+      </div>      
       <div>
-        <div className='grid grid-cols-12 gap-2 items-center p-2 bg-sidebar'>
-          <TypographySmall className='col-span-6'>Sản phẩm</TypographySmall>
-          <TypographySmall className='col-span-2 text-right'>Đơn giá</TypographySmall>
-          <TypographySmall className='col-span-2 text-right'>Số lượng</TypographySmall>
-          <TypographySmall className='col-span-2 text-right'>Thành tiền</TypographySmall>
-        </div>
-        <div className='divide-y'>
-          {order.orderDetails.map(item => (
-            <OrderDetailsItem key={item.bookId} bookId={item.bookId} price={item.price} quantity={item.quantity} />
-          ))}
-        </div>
-      </div>
+  {/* Desktop headers */}
+  <div className="hidden md:grid md:grid-cols-12 gap-2 items-center p-2 bg-sidebar">
+    <TypographySmall className="col-span-4">Sản phẩm</TypographySmall>
+    <TypographySmall className="col-span-2 text-right">Đơn giá</TypographySmall>
+    <TypographySmall className="col-span-2 text-right">Số lượng</TypographySmall>
+    <TypographySmall className="col-span-2 text-right">Thành tiền</TypographySmall>
+    <TypographySmall className="col-span-2 text-center">Đánh giá</TypographySmall>
+  </div>
+  
+  {/* Mobile header */}
+  <div className="md:hidden p-2 bg-sidebar">
+    <TypographySmall className="text-center">Chi tiết đơn hàng</TypographySmall>
+  </div>
+  
+  <div className="divide-y">
+    {order.orderDetails.map(item => (
+      <OrderDetailsItem 
+        key={item.bookId} 
+        bookId={item.bookId} 
+        price={item.price} 
+        quantity={item.quantity} 
+        orderId={order.id}
+      />
+    ))}
+  </div>
+</div>
       <div className='flex items-center justify-end gap-4 bg-sidebar px-4 py-2 rounded-md'>
         <TypographyLarge>Tổng tiền:</TypographyLarge>
         <TypographyH4 className='text-primary font-semibold'>{formatVND(order.total)}</TypographyH4>

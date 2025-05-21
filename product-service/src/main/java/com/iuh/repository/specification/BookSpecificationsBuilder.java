@@ -58,7 +58,7 @@ public class BookSpecificationsBuilder {
         if (params.isEmpty())
             return null;
 
-        Specification<Book> result = new SearchSpecification<>(params.getFirst());
+        Specification<Book> result = new SearchSpecification<>(params.get(0));
 
         for (int i = 1; i < params.size(); i++) {
             result = params.get(i).isOrPredicate()

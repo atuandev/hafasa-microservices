@@ -5,7 +5,7 @@ import { FormQuantity } from '@/app/(store)/(books)/_components/form-quantity'
 import { AddCartButton } from '@/app/(store)/(books)/_components/add-cart-button'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { TypographyH3, TypographyH4, TypographyLarge, TypographyMuted, TypographySmall } from '@/components/typography'
-
+import { BookReviews } from '@/app/(store)/(books)/_components/book-reviews'
 type BookDetailProps = {
   book: Book
 }
@@ -108,6 +108,7 @@ export function BookDetail({ book }: BookDetailProps) {
           <TypographyLarge className="mb-2">Mô tả sản phẩm</TypographyLarge>
           <p>{book.description}</p>
         </div>
+         <BookReviews bookId={book.id} />
       </div>
     </div>
   )
